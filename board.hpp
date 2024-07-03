@@ -37,12 +37,7 @@ The vertices and edges are represented by numbers. The vertices are represented 
 #include <string>
 #include "player.hpp"
 
-#define WOOD 0
-#define BRICK 1
-#define SHEEP 2
-#define WHEAT 3
-#define STONE 4
-#define DESERT -1
+
 
 //#include "catan.hpp"
 
@@ -97,6 +92,11 @@ namespace ariel {
             {
                 this->number = number;
                 this->type = type;
+            }
+
+            string getType()
+            {
+                return this->type;
             }
     };
 

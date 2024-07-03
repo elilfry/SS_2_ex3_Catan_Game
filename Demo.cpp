@@ -37,8 +37,8 @@ int main()
 
     cout << "Starting of the game. Every player places two settlements and two roads." << endl;
     catan.ChooseStartingPlayer(); // should print the name of the starting player, assume it is Amit.
-    Board board = catan.getBoard(); // get the board of the game.
-    
+    //catan.getBoard().printBoard(); // get the board of the game.
+
 
 }
     

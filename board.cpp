@@ -3,10 +3,22 @@
 namespace ariel
 {
 
-    vector <int> numbers = {2 , 3 , 3 , 4 , 4 , 5 , 5 , 6 , 6 , 8 ,8 , 9 , 9 , 10 , 10 , 11 , 11 , 12}; //numbers for the tiles
+    //vector <int> numbers = {2 , 3 , 3 , 4 , 4 , 5 , 5 , 6 , 6 , 8 ,8 , 9 , 9 , 10 , 10 , 11 , 11 , 12}; //numbers for the tiles
+    vector<int> numbers = {
+        10, 2, 9,
+        12, 6, 4, 10,
+        9, 11, 0, 3, 8,
+        8, 3, 4, 5,
+        5, 6, 11
+    };
 
-    vector<int> resources = { WOOD , WOOD , WOOD , WOOD , BRICK , BRICK , BRICK , SHEEP , SHEEP , SHEEP , SHEEP , WHEAT , WHEAT , WHEAT , WHEAT , STONE , STONE ,STONE ,   DESERT}; //resources for the tiles
-
+    vector<string> resources = {
+        "Ore", "Wool", "Wheat",
+        "Wheat", "Brick", "Wood", "Wheat",
+        "Brick", "Wool", "Desert", "Wood", "Ore",
+        "Wheat", "Wood", "Wool", "Wood",
+        "Brick", "Wheat", "Ore"
+    };
     // Initialize the 2D vector of tiles with the appropriate layer sizes 3 4 5 4 3 
     // and fill it with the appropriate tiles.
 vector<vector<Tile>> tiles = {
@@ -17,12 +29,38 @@ vector<vector<Tile>> tiles = {
         vector<Tile>(3)
     };    
 
+      
+
+
+/*
+Resources and Numbers Layout:
+Top row: 10 (Stone), 2 (SHEEP), 9 (Wheat)
+Second row: 12 (Wheat), 6 (Brick), 4 (Wood), 10 (Wheat)
+Third row: 9 (Brick), 11 (SHEEP), Desert, 3 (Wood), 8 (Stone)
+Fourth row: 8 (Wheat), 3 (Wood), 4 (SHEEP), 5 (Wood)
+Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
+*/
     
 
-
-
+    
     Board::Board()
     {
+
+        // Initialize tiles with resources and numbers
+        size_t resourceIndex = 0;
+        size_t numberIndex = 0;
+        for (size_t layer = 0; layer < tiles.size(); ++layer) {
+            for (size_t i = 0; i < tiles[layer].size(); ++i) {
+                if (resources[resourceIndex] == "Desert") {
+                    tiles[layer][i] = Tile(0, "Desert"); // Desert tiles have no number
+                } else {
+                    tiles[layer][i] = Tile(numbers[numberIndex], resources[resourceIndex]);
+                    ++numberIndex;
+                }
+                ++resourceIndex;
+            }
+        }
+        
         // Initialize the board with 19 tiles.
         
         // Initialize the board with 54 vertices.
@@ -51,15 +89,43 @@ vector<vector<Tile>> tiles = {
     }
     Board::~Board() {    }         // Destructor implementation
 
-// print the board from 0 t0 53 vertices
+
+
+// void Board::printBoard() {
+
+//     for(int i=0;i<53;i++){
+//          cout << "              " << vertices[0].number  << "       " << endl;
+//     }
+
+
+//     cout << "              " << vertices[0].number  << "       " << vertices[1].number << "       " << vertices[2].number << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "         (" << vertices[3].number << ") | " << tiles[0][0].getType() << "," << tiles[0][0].number << " | (" << vertices[4].number << ") | " << tiles[0][1].getType() << "," << tiles[0][1].number << " | (" << vertices[5].number << ") | " << tiles[0][2].getType() << "," << tiles[0][2].number << " | (" << vertices[6].number << ")" << endl;
+//     cout << "               \\ /       \\ /       \\ /" << endl;
+//     cout << "         (" << vertices[7].number << ")       (" << vertices[8].number << ")       (" << vertices[9].number << ")" << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "   (" << vertices[10].number << ") | " << tiles[1][0].getType() << "," << tiles[1][0].number << " | (" << vertices[11].number << ") | " << tiles[1][1].getType() << "," << tiles[1][1].number << " | (" << vertices[12].number << ") | " << tiles[1][2].getType() << "," << tiles[1][2].number << " | (" << vertices[13].number << ")" << endl;
+//     cout << "               \\ /       \\ /       \\ /" << endl;
+//     cout << "         (" << vertices[14].number << ")       (" << vertices[15].number << ")       (" << vertices[16].number << ")" << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "   (" << vertices[17].number << ") | " << tiles[2][0].getType() << "," << tiles[2][0].number << " | (" << vertices[18].number << ") | " << tiles[2][1].getType() << "," << tiles[2][1].number << " | (" << vertices[19].number << ") | " << tiles[2][2].getType() << "," << tiles[2][2].number << " | (" << vertices[20].number << ") | " << tiles[2][3].getType() << "," << tiles[2][3].number << " | (" << vertices[21].number << ")" << endl;
+//     cout << "               \\ /       \\ /       \\ /" << endl;
+//     cout << "         (" << vertices[22].number << ")       (" << vertices[23].number << ")       (" << vertices[24].number << ")" << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "   (" << vertices[25].number << ") | " << tiles[3][0].getType() << "," << tiles[3][0].number << " | (" << vertices[26].number << ") | " << tiles[3][1].getType() << "," << tiles[3][1].number << " | (" << vertices[27].number << ") | " << tiles[3][2].getType() << "," << tiles[3][2].number << " | (" << vertices[28].number << ") | " << tiles[3][3].getType() << "," << tiles[3][3].number << " | (" << vertices[29].number << ")" << endl;
+//     cout << "               \\ /       \\ /       \\ /" << endl;
+//     cout << "         (" << vertices[30].number << ")       (" << vertices[31].number << ")       (" << vertices[32].number << ")" << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "   (" << vertices[33].number << ") | " << tiles[4][0].getType() << "," << tiles[4][0].number << " | (" << vertices[34].number << ") | " << tiles[4][1].getType() << "," << tiles[4][1].number << " | (" << vertices[35].number << ") | " << tiles[4][2].getType() << "," << tiles[4][2].number << " | (" << vertices[36].number << ")" << endl;
+//     cout << "               \\ /       \\ /       \\ /" << endl;
+//     cout << "         (" << vertices[37].number << ")       (" << vertices[38].number << ")       (" << vertices[39].number << ")" << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "         (" << vertices[40].number << ")       (" << vertices[41].number << ")       (" << vertices[42].number << ")" << endl;
+//     cout << "               / \\       / \\       / \\" << endl;
+//     cout << "               (" << vertices[43].number << ")       (" << vertices[44].number << ")       (" << vertices[45].number << ")" << endl;
+// }
+
     
-
-    void Board::printBoard(){
-
-        
-
-
-    }
 
      void Board::initializeVerticesNeighbors()
     {
