@@ -108,6 +108,10 @@ namespace ariel {
             vector<vector<Tile>> tiles;
 
         public:
+            char getVertexState(int vertex);
+            char getEdgeState(int edge);
+            void setVertexState(int vertex, char state);
+            void setEdgeState(int edge, char state);
             Board();
             void initializeVerticesNeighbors(); ///////---------------------------------
             void initializeEdgesNeighbors(); ///---------------------------------
@@ -120,10 +124,10 @@ namespace ariel {
             void placeCity(Vertex &v, Player &p);
 
 
-            void PrintBoard();
-            void PrintVertices();
-            void PrintEdges();
-            void PrintTiles();
+            void printBoard();
+            void printVertices();
+            void printEdges();
+            void printTiles();
 
 
     };

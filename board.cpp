@@ -17,7 +17,7 @@ vector<vector<Tile>> tiles = {
         vector<Tile>(3)
     };    
 
-
+    
 
 
 
@@ -51,6 +51,15 @@ vector<vector<Tile>> tiles = {
     }
     Board::~Board() {    }         // Destructor implementation
 
+// print the board from 0 t0 53 vertices
+    
+
+    void Board::printBoard(){
+
+        
+
+
+    }
 
      void Board::initializeVerticesNeighbors()
     {
@@ -120,9 +129,6 @@ vector<vector<Tile>> tiles = {
         vertices[6].neighbors_edges = {5, 9};
         vertices[7].neighbors_edges = {10, 18};
         vertices[8].neighbors_edges = {6, 10, 11};
-        vertices[9].neighbors_edges = {11, 12, 19};
-        vertices[10].neighbors_edges = {7, 12, 13};
-        vertices[11].neighbors_edges = {13, 14, 20};
         vertices[12].neighbors_edges = {8, 14, 15};
         vertices[13].neighbors_edges = {15, 16, 21};
         vertices[14].neighbors_edges = {9, 16, 17};
