@@ -91,10 +91,12 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
 
 
 
-// void Board::printBoard() {
+void Board::printBoard() {
 
-//     for(int i=0;i<53;i++){
-//          cout << "              " << vertices[0].number  << "       " << endl;
+    //print the board 
+
+//     for(unsigned int i=0;i<53;i++){
+//          cout << "              " << vertices[i].number  << "       " << endl;
 //     }
 
 
@@ -123,7 +125,8 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
 //     cout << "         (" << vertices[40].number << ")       (" << vertices[41].number << ")       (" << vertices[42].number << ")" << endl;
 //     cout << "               / \\       / \\       / \\" << endl;
 //     cout << "               (" << vertices[43].number << ")       (" << vertices[44].number << ")       (" << vertices[45].number << ")" << endl;
-// }
+// 
+}
 
     
 

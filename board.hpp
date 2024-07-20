@@ -57,7 +57,11 @@ namespace ariel {
             Vertex(int number)
             {
                 this->number = number;
+                this->type = "empty";
+                this->owner = "none";
             }
+
+           
     };
 
 
@@ -72,6 +76,7 @@ namespace ariel {
             Edge(int number)
             {
                 this->number = number;
+                this->owner = "none";
                
             }
     };
@@ -98,6 +103,13 @@ namespace ariel {
             {
                 return this->type;
             }
+
+            friend ostream& operator<<(ostream& os, const Tile& t)
+            {
+                os << t.type << ","  << t.number;
+                return os;
+            }
+
     };
 
     class Board
