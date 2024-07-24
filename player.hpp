@@ -37,6 +37,7 @@ namespace ariel
 
         string getName();
         int getPoints();
+        void addPoints(int amount);
 
         // void placeSettelemnt(vector<string> places, vector<int> placesNum, Board &board);
         // void placeRoad(vector<string> places, vector<int> placesNum, Board &board);

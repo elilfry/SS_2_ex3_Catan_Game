@@ -45,7 +45,6 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
     
     Board::Board()
     {
-
         // Initialize tiles with resources and numbers
         size_t resourceIndex = 0;
         size_t numberIndex = 0;
@@ -69,64 +68,177 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
         {
             vertices.push_back(Vertex(i));
         }
-        cout << "Vertices initialized." << endl;
         initializeVerticesNeighbors(); // -------------------------------------------
 
-        cout << "Initializing edges..." << endl;
         // Initialize the board with 72 edges.
         for(int i = 0; i < 72; i++)
         {
             edges.push_back(Edge(i));
         }
         initializeEdgesNeighbors(); // -------------------------------------------
-        cout << "Edges initialized." << endl;
         // Assign vertices and edges to the tiles -------------------------------------------
-        cout << "Assigning vertices and edges to tiles..." << endl;
         assignVerticesAndEdgesToTiles();// -------------------------------------------
-        cout << "Vertices and edges assigned to tiles." << endl;
         // Initialize the neighbors of the vertices and edges. -------------------------------------------
 
     }
     Board::~Board() {    }         // Destructor implementation
 
+    bool Board::placeSettlement(Player &player, int vertex)
+{
+    if (vertex < 0 || vertex >= 54)
+    {
+        cout << "Invalid vertex, vertex is out of range, you chose: " << vertex <<endl;
+        return false;
+    }
 
+    for (size_t i = 0; i < vertices.size(); i++)
+    {
+        Vertex &currentVertex = vertices[i];
+        if (currentVertex.number == vertex)
+        {
+            // Check if the vertex is already occupied
+            if (currentVertex.getOwner() != "none")
+            {
+                cout << "Vertex " << vertex << " is already owned by " << currentVertex.getOwner() << endl;
+                return false;
+            }
 
-void Board::printBoard() {
+            // Check if the vertex has an adjacent settlement
+            for (size_t j = 0; j < currentVertex.neighbors_vertice.size(); j++)
+            {
+                int neighborVertexIndex = currentVertex.neighbors_vertice[j];
+                if (vertices[(size_t)neighborVertexIndex].getOwner() != "none") //
+                {
+                    cout << "Adjacent vertex " << neighborVertexIndex << " is already owned by " << vertices[(size_t)neighborVertexIndex].getOwner() << endl;
+                    return false;
+                }
+            }
 
-    //print the board 
+            // Check if the vertex has no adjacent road (if it is not the first turn)
+            if (player.getPoints() > 2)
+            {
+                bool hasAdjacentRoad = false;
+                for (size_t j = 0; j < currentVertex.neighbors_edges.size(); j++)
+                {
+                    int edgeIndex = currentVertex.neighbors_edges[j];
+                    if (edges[(size_t)edgeIndex].owner == player.getName())
+                    {
+                        hasAdjacentRoad = true;
+                        break;
+                    }
+                }
 
-//     for(unsigned int i=0;i<53;i++){
-//          cout << "              " << vertices[i].number  << "       " << endl;
-//     }
+                if (!hasAdjacentRoad)
+                {
+                    cout << "Vertex " << vertex << " has no adjacent road owned by " << player.getName() << endl;
+                    return false;
+                }
+            }
 
+            // Place the settlement at the vertex
+            currentVertex.setType("settlement");
+            currentVertex.setOwner(player.getName());
+            cout << "Settlement placed successfully at vertex " << vertex << "." << endl;
+            return true;
+        }
+    }
 
-//     cout << "              " << vertices[0].number  << "       " << vertices[1].number << "       " << vertices[2].number << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "         (" << vertices[3].number << ") | " << tiles[0][0].getType() << "," << tiles[0][0].number << " | (" << vertices[4].number << ") | " << tiles[0][1].getType() << "," << tiles[0][1].number << " | (" << vertices[5].number << ") | " << tiles[0][2].getType() << "," << tiles[0][2].number << " | (" << vertices[6].number << ")" << endl;
-//     cout << "               \\ /       \\ /       \\ /" << endl;
-//     cout << "         (" << vertices[7].number << ")       (" << vertices[8].number << ")       (" << vertices[9].number << ")" << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "   (" << vertices[10].number << ") | " << tiles[1][0].getType() << "," << tiles[1][0].number << " | (" << vertices[11].number << ") | " << tiles[1][1].getType() << "," << tiles[1][1].number << " | (" << vertices[12].number << ") | " << tiles[1][2].getType() << "," << tiles[1][2].number << " | (" << vertices[13].number << ")" << endl;
-//     cout << "               \\ /       \\ /       \\ /" << endl;
-//     cout << "         (" << vertices[14].number << ")       (" << vertices[15].number << ")       (" << vertices[16].number << ")" << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "   (" << vertices[17].number << ") | " << tiles[2][0].getType() << "," << tiles[2][0].number << " | (" << vertices[18].number << ") | " << tiles[2][1].getType() << "," << tiles[2][1].number << " | (" << vertices[19].number << ") | " << tiles[2][2].getType() << "," << tiles[2][2].number << " | (" << vertices[20].number << ") | " << tiles[2][3].getType() << "," << tiles[2][3].number << " | (" << vertices[21].number << ")" << endl;
-//     cout << "               \\ /       \\ /       \\ /" << endl;
-//     cout << "         (" << vertices[22].number << ")       (" << vertices[23].number << ")       (" << vertices[24].number << ")" << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "   (" << vertices[25].number << ") | " << tiles[3][0].getType() << "," << tiles[3][0].number << " | (" << vertices[26].number << ") | " << tiles[3][1].getType() << "," << tiles[3][1].number << " | (" << vertices[27].number << ") | " << tiles[3][2].getType() << "," << tiles[3][2].number << " | (" << vertices[28].number << ") | " << tiles[3][3].getType() << "," << tiles[3][3].number << " | (" << vertices[29].number << ")" << endl;
-//     cout << "               \\ /       \\ /       \\ /" << endl;
-//     cout << "         (" << vertices[30].number << ")       (" << vertices[31].number << ")       (" << vertices[32].number << ")" << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "   (" << vertices[33].number << ") | " << tiles[4][0].getType() << "," << tiles[4][0].number << " | (" << vertices[34].number << ") | " << tiles[4][1].getType() << "," << tiles[4][1].number << " | (" << vertices[35].number << ") | " << tiles[4][2].getType() << "," << tiles[4][2].number << " | (" << vertices[36].number << ")" << endl;
-//     cout << "               \\ /       \\ /       \\ /" << endl;
-//     cout << "         (" << vertices[37].number << ")       (" << vertices[38].number << ")       (" << vertices[39].number << ")" << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "         (" << vertices[40].number << ")       (" << vertices[41].number << ")       (" << vertices[42].number << ")" << endl;
-//     cout << "               / \\       / \\       / \\" << endl;
-//     cout << "               (" << vertices[43].number << ")       (" << vertices[44].number << ")       (" << vertices[45].number << ")" << endl;
-// 
+    return false;
 }
+
+    // bool Board::placeSettlement(Player &player, int vertex)
+    // {
+    
+
+    //     if(vertex < 0 || vertex >= 54)
+    //     {
+    //         cout << "Invalid vertex, vertex is out of range, you chose: " << vertex << "" << endl;
+    //         return false;
+    //     }
+
+    //     for(size_t i = 0; i < vertices.size(); i++)
+    //     {
+    //         bool flag = true;
+            
+    //         if(vertices[i].number == vertex) //get the vertex
+    //         {
+    //             if(vertices[i].owner != "none") // Check if the vertex is available
+    //             {
+    //                 cout << "Vertex " << vertex << " is already owned by " << vertices[i].owner << std::endl;
+    //                 flag = false;
+    //                 return false;
+    //             }
+
+    //             // Check if the vertex has an adjacent settlement
+    //             for(size_t j = 0; j < vertices[i].neighbors_vertice.size(); j++)
+    //             {
+    //                 if(vertices[vertices[i].neighbors_vertice[j]].owner != player.getName()) // Check if the vertex has an adjacent settlement
+    //                 {
+    //                     flag = false;
+    //                 }
+    //             }
+
+    //             // Check if the vertex has no adjacent road(if it is not the first turn)
+    //             if(player.getPoints() > 2)
+    //             {
+    //                 for(size_t j = 0; j < vertices[i].neighbors_edges.size(); j++)
+    //                 {
+    //                     if(edges[vertices[i].neighbors_edges[j]].owner != player.getName()) // Check if the vertex has no adjacent road
+    //                     {
+    //                         flag = false;
+    //                     }
+                    
+    //                  }
+    //              }
+
+    //             if(flag)
+    //             {
+    //                 vertices[i].owner = player.getName();
+    //                 vertices[i].type = "settlement";
+    //                 return true;
+    //             }
+    
+    //         }
+    //     }
+    // return false;   
+    // }
+
+    void Board::printBoard() {
+
+        //print the board 
+
+    //     for(unsigned int i=0;i<53;i++){
+    //          cout << "              " << vertices[i].number  << "       " << endl;
+    //     }
+
+
+    //     cout << "              " << vertices[0].number  << "       " << vertices[1].number << "       " << vertices[2].number << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "         (" << vertices[3].number << ") | " << tiles[0][0].getType() << "," << tiles[0][0].number << " | (" << vertices[4].number << ") | " << tiles[0][1].getType() << "," << tiles[0][1].number << " | (" << vertices[5].number << ") | " << tiles[0][2].getType() << "," << tiles[0][2].number << " | (" << vertices[6].number << ")" << endl;
+    //     cout << "               \\ /       \\ /       \\ /" << endl;
+    //     cout << "         (" << vertices[7].number << ")       (" << vertices[8].number << ")       (" << vertices[9].number << ")" << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "   (" << vertices[10].number << ") | " << tiles[1][0].getType() << "," << tiles[1][0].number << " | (" << vertices[11].number << ") | " << tiles[1][1].getType() << "," << tiles[1][1].number << " | (" << vertices[12].number << ") | " << tiles[1][2].getType() << "," << tiles[1][2].number << " | (" << vertices[13].number << ")" << endl;
+    //     cout << "               \\ /       \\ /       \\ /" << endl;
+    //     cout << "         (" << vertices[14].number << ")       (" << vertices[15].number << ")       (" << vertices[16].number << ")" << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "   (" << vertices[17].number << ") | " << tiles[2][0].getType() << "," << tiles[2][0].number << " | (" << vertices[18].number << ") | " << tiles[2][1].getType() << "," << tiles[2][1].number << " | (" << vertices[19].number << ") | " << tiles[2][2].getType() << "," << tiles[2][2].number << " | (" << vertices[20].number << ") | " << tiles[2][3].getType() << "," << tiles[2][3].number << " | (" << vertices[21].number << ")" << endl;
+    //     cout << "               \\ /       \\ /       \\ /" << endl;
+    //     cout << "         (" << vertices[22].number << ")       (" << vertices[23].number << ")       (" << vertices[24].number << ")" << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "   (" << vertices[25].number << ") | " << tiles[3][0].getType() << "," << tiles[3][0].number << " | (" << vertices[26].number << ") | " << tiles[3][1].getType() << "," << tiles[3][1].number << " | (" << vertices[27].number << ") | " << tiles[3][2].getType() << "," << tiles[3][2].number << " | (" << vertices[28].number << ") | " << tiles[3][3].getType() << "," << tiles[3][3].number << " | (" << vertices[29].number << ")" << endl;
+    //     cout << "               \\ /       \\ /       \\ /" << endl;
+    //     cout << "         (" << vertices[30].number << ")       (" << vertices[31].number << ")       (" << vertices[32].number << ")" << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "   (" << vertices[33].number << ") | " << tiles[4][0].getType() << "," << tiles[4][0].number << " | (" << vertices[34].number << ") | " << tiles[4][1].getType() << "," << tiles[4][1].number << " | (" << vertices[35].number << ") | " << tiles[4][2].getType() << "," << tiles[4][2].number << " | (" << vertices[36].number << ")" << endl;
+    //     cout << "               \\ /       \\ /       \\ /" << endl;
+    //     cout << "         (" << vertices[37].number << ")       (" << vertices[38].number << ")       (" << vertices[39].number << ")" << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "         (" << vertices[40].number << ")       (" << vertices[41].number << ")       (" << vertices[42].number << ")" << endl;
+    //     cout << "               / \\       / \\       / \\" << endl;
+    //     cout << "               (" << vertices[43].number << ")       (" << vertices[44].number << ")       (" << vertices[45].number << ")" << endl;
+    // 
+    }
 
     
 

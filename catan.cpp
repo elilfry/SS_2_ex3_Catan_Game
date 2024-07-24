@@ -7,13 +7,11 @@ namespace ariel
     
     Catan::Catan(Player &p1, Player &p2, Player &p3)
     {
-        try
-        {
-            cout << "Initializing players..." << endl;
+        
+            //initialize players
             players.push_back(&p1);
             players.push_back(&p2);
             players.push_back(&p3);
-            cout << "Players initialized." << endl;
 
             cout << "Initializing board..." << endl;
             board = Board();
@@ -22,15 +20,9 @@ namespace ariel
             this->ChooseStartingPlayer();
             cout << "Starting player chosen.\n" << endl;
             
-        }
-        catch (const std::exception &e)
-        {
-            cerr << "Exception during Catan initialization: " << e.what() << endl;
-        }
-        catch (...)
-        {
-            cerr << "Unknown error during Catan initialization." << endl;
-        }
+        
+        
+        
     }
 
     Catan::~Catan()
@@ -38,32 +30,12 @@ namespace ariel
         cout << "Catan game destroyed." << endl;
     }
     
-    // Catan::Catan(Player &p1,Player &p2,Player &p3)
-    // {
-    //     cout << "Initializing players..." << endl;
-        
-    //     players.push_back(&p1);
-    //     players.push_back(&p2);
-    //     players.push_back(&p3);
-        
-    //     cout << "Players initialized." << endl; 
-    //    board = Board();
-        
-
-    //     cout << "Board initialized." << endl;
-
-    //     //this->ChooseStartingPlayer();
-
-    //     cout << "Starting player chosen." << endl;
-
-    // }
-
-    //Catan::~Catan(){}
+    
 
     void Catan::ChooseStartingPlayer() //need to check
     {
         srand(time(0));
-        currentPlayer = rand() % 3;
+        currentPlayer = rand() % 3; // choose a random player to start
     }
 
     Board& Catan::getBoard()
@@ -81,14 +53,56 @@ namespace ariel
         currentPlayer = (currentPlayer + 1) % 3;
     }
 
-    void Catan::placeSettlement(vector<string> places, vector<int> placesNum)
+    void Catan::previousPlayer()
     {
-        // check if the player has enough resources
-        // check if the player has a road in the places
-        // check if the places are valid
-        // check if the places are empty
-        // check if the places are not too close to other settlements
-        // check if the places are not too close to other roads
+        currentPlayer = (currentPlayer + 2) % 3;
+    }
+
+    void Catan::placeSettlement(Player &player, Board &board    )
+    {
+        //check if it is the player's turn
+        if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
+        {
+            cout << "It is not your turn." << endl;
+            return;
+        }
+
+
+        //if it is the 1st round of the game
+
+        if(player.getPoints() < 2) 
+        {
+            cout << "Please enter where you want to place the settlement." << endl;
+            int place;
+            cin >> place;
+            
+            while(!board.placeSettlement(player, place))
+            {
+                cout << "Please enter again where you want to place the settlement." << endl;
+                cin >> place;
+            }
+            player.addPoints(1);
+        }
+        else //if it is the 2nd round of the game or more
+        {
+            //check if the player has enough resources
+
+            cout << "Please enter where you want to place the settlement." << endl;
+            int place;
+            cin >> place;
+
+            while (!board.placeSettlement(player, place))
+            {
+                cout << "Please enter again where you want to place the settlement." << endl;
+                cin >> place;
+            }
+
+
+        }
+       
+        
+        
+        
     }
 
 

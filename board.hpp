@@ -47,10 +47,16 @@ namespace ariel {
 
     class Vertex
     {   
+        
+        private:
+        string owner;
+        string type; // "settlement" or "city"
+        
+        
+        
+        
         public:
             int number;
-            string owner; 
-            string type; // "settlement" or "city"
             vector<int> neighbors_edges;
             vector<int> neighbors_vertice;
     
@@ -60,6 +66,24 @@ namespace ariel {
                 this->type = "empty";
                 this->owner = "none";
             }
+
+            string getOwner() const
+            {
+                return this->owner;
+            }
+            void setOwner(string newOwner)
+            {
+                this->owner = newOwner;
+            }
+            string getType() const
+            {
+                return this->type;
+            }
+            void setType(const string newType)
+        {
+            type = newType;
+        }
+                
 
            
     };
@@ -131,7 +155,7 @@ namespace ariel {
             ~Board();
 
             void initBoard();
-            void placeSettlement(Vertex &v, Player &p);
+            bool placeSettlement(Player &p, int vertexId);
             void placeRoad(Edge &e, Player &p);
             void placeCity(Vertex &v, Player &p);
 

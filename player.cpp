@@ -27,6 +27,11 @@ namespace ariel
         return this->points;
     }
 
+    void Player::addPoints(int amount)
+    {
+        this->points += amount;
+    }
+
     // void Player::placeSettelemnt(vector<string> places, vector<int> placesNum, Board &board)
     // {
     //     // check if the player has enough resources

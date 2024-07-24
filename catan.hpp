@@ -21,8 +21,9 @@ namespace ariel
         Board& getBoard();
         Player& getCurrentPlayer();
         void nextPlayer();
+        void previousPlayer();
 
-        void placeSettlement(vector<string> places, vector<int> placesNum);
+        void placeSettlement(Player &player,Board &board);
     };
 } // namespace ariel
 
