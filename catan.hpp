@@ -11,7 +11,7 @@ namespace ariel
     private:
         Board board;
         vector<Player*> players;
-        int currentPlayer;
+       int currentPlayer;
 
     public:
         Catan(Player& p1, Player& p2, Player& p3);
@@ -24,6 +24,12 @@ namespace ariel
         void previousPlayer();
 
         void placeSettlement(Player &player,Board &board);
+        void placeRoad(Player &player,Board &board);
+        void upgradeSettlementToCity(Player &player,Board &board);
+
+        bool isGameFinished();
+        void rollDice();
+
     };
 } // namespace ariel
 

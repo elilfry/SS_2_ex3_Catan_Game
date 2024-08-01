@@ -1,4 +1,5 @@
 #include "player.hpp"
+#include "board.hpp"
 
 
 namespace ariel
@@ -10,7 +11,10 @@ namespace ariel
     {
         this->name = name;
         this->points = 0;
-        cout << "Player " << name << " initialized with " << points << " points." << endl;
+        for(int i = 0; i < 5; i++)
+        {
+            resources[i] = 0;
+        }
     }
 
     Player::~Player()
@@ -32,17 +36,92 @@ namespace ariel
         this->points += amount;
     }
 
-    // void Player::placeSettelemnt(vector<string> places, vector<int> placesNum, Board &board)
+    int Player::getRoadsNum()
+    {
+        return this->roadsNum;
+    }
+
+    void Player::addRoadsNum(int amount)
+    {
+        this->roadsNum += amount;
+    }
+
+    void Player::printResources()
+    {
+        cout << "Player " << name << " resources:" << endl;
+        cout << "Wood: " << resources[WOOD] << endl;
+        cout << "Brick: " << resources[BRICK] << endl;
+        cout << "Sheep: " << resources[SHEEP] << endl;
+        cout << "Wheat: " << resources[WHEAT] << endl;
+        cout << "Iron: " << resources[IRON] << endl;
+    }
+
+    void Player::addResource(int resourceType, int amount)
+    {
+        if(resourceType < 0 || resourceType > 4)
+        {
+            cout << "Invalid resource type." << endl;
+            return;
+        }
+        else
+        {
+            resources[resourceType] += amount;
+            cout << "Player " << name << " received " << amount << " " << resourceType << " resources." << endl;
+
+        }
+    }
+
+    void Player::removeResource(int resourceType, int amount)
+    {
+        if(resourceType < 0 || resourceType > 4)
+        {
+            cout << "Invalid resource type." << endl;
+            return;
+        }
+        else if(resources[resourceType] < amount)
+        {
+            cout << "Not enough resources." << endl;
+            return;
+        }
+        else
+        {
+            resources[resourceType] -= amount;
+        }
+    } 
+
+    int Player::getResource(int resourceType)
+    {
+        if(resourceType < 0 || resourceType > 4)
+        {
+            cout << "Invalid resource type." << endl;
+            return -1;
+        }
+        else
+        {
+            return resources[resourceType];
+        }
+    }
+
+           // int getTotalResources();
+    int Player::getTotalResources()
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            totalResources += resources[i];
+        }
+        return totalResources;
+    }
+
+    // void Player::sumIs7()
     // {
-    //     // check if the player has enough resources
-    //     // check if the player has a road in the places
-    //     // check if the places are valid
-    //     // check if the places are empty
-    //     // check if the places are not too close to other settlements
-    //     // check if the places are not too close to other roads
+    //     int total = getTotalResources();
+    //  if(total <8)
+    //  {
+    //     return;
+    //  }else//pick random 1/2 of the resources and return them to the bank
+    //  {
 
-
-
-    // }
+    //  }
+    // }  
 
 } // namespace ariel

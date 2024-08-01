@@ -3,6 +3,8 @@
 namespace ariel
 {
 
+
+
     //vector <int> numbers = {2 , 3 , 3 , 4 , 4 , 5 , 5 , 6 , 6 , 8 ,8 , 9 , 9 , 10 , 10 , 11 , 11 , 12}; //numbers for the tiles
     vector<int> numbers = {
         10, 2, 9,
@@ -12,12 +14,12 @@ namespace ariel
         5, 6, 11
     };
 
-    vector<string> resources = {
-        "Ore", "Wool", "Wheat",
-        "Wheat", "Brick", "Wood", "Wheat",
-        "Brick", "Wool", "Desert", "Wood", "Ore",
-        "Wheat", "Wood", "Wool", "Wood",
-        "Brick", "Wheat", "Ore"
+    vector<int> resources = {
+        IRON, SHEEP, WHEAT,
+        WHEAT, BRICK, WOOD, WHEAT,
+        BRICK, SHEEP, DESERT, WOOD, IRON,
+        WHEAT, WOOD, SHEEP, WOOD,
+        BRICK, WHEAT, IRON
     };
     // Initialize the 2D vector of tiles with the appropriate layer sizes 3 4 5 4 3 
     // and fill it with the appropriate tiles.
@@ -34,11 +36,11 @@ vector<vector<Tile>> tiles = {
 
 /*
 Resources and Numbers Layout:
-Top row: 10 (Stone), 2 (SHEEP), 9 (Wheat)
+Top row: 10 (iron), 2 (Wool), 9 (Wheat)
 Second row: 12 (Wheat), 6 (Brick), 4 (Wood), 10 (Wheat)
-Third row: 9 (Brick), 11 (SHEEP), Desert, 3 (Wood), 8 (Stone)
-Fourth row: 8 (Wheat), 3 (Wood), 4 (SHEEP), 5 (Wood)
-Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
+Third row: 9 (Brick), 11 (Wool), Desert, 3 (Wood), 8 (iron)
+Fourth row: 8 (Wheat), 3 (Wood), 4 (Wool), 5 (Wood)
+Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
 */
     
 
@@ -50,20 +52,17 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
         size_t numberIndex = 0;
         for (size_t layer = 0; layer < tiles.size(); ++layer) {
             for (size_t i = 0; i < tiles[layer].size(); ++i) {
-                if (resources[resourceIndex] == "Desert") {
-                    tiles[layer][i] = Tile(0, "Desert"); // Desert tiles have no number
-                } else {
-                    tiles[layer][i] = Tile(numbers[numberIndex], resources[resourceIndex]);
-                    ++numberIndex;
-                }
+                 tiles[layer][i] = Tile(numbers[numberIndex], resources[resourceIndex]);
+                ++numberIndex;
                 ++resourceIndex;
             }
         }
+
+        
         
         // Initialize the board with 19 tiles.
         
         // Initialize the board with 54 vertices.
-        cout << "Initializing vertices..." << endl;
         for(int i = 0; i < 54; i++)
         {
             vertices.push_back(Vertex(i));
@@ -84,17 +83,17 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
     Board::~Board() {    }         // Destructor implementation
 
     bool Board::placeSettlement(Player &player, int vertex)
-{
-    if (vertex < 0 || vertex >= 54)
     {
-        cout << "Invalid vertex, vertex is out of range, you chose: " << vertex <<endl;
-        return false;
-    }
+        if (vertex < 0 || vertex >= 54)
+        {
+            cout << "Invalid vertex, vertex is out of range, you chose: " << vertex <<endl;
+            return false;
+        }
 
     for (size_t i = 0; i < vertices.size(); i++)
     {
         Vertex &currentVertex = vertices[i];
-        if (currentVertex.number == vertex)
+        if (currentVertex.getNumber() == vertex)
         {
             // Check if the vertex is already occupied
             if (currentVertex.getOwner() != "none")
@@ -115,7 +114,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
             }
 
             // Check if the vertex has no adjacent road (if it is not the first turn)
-            if (player.getPoints() > 2)
+            if (player.getPoints() >= 2)
             {
                 bool hasAdjacentRoad = false;
                 for (size_t j = 0; j < currentVertex.neighbors_edges.size(); j++)
@@ -144,66 +143,171 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
     }
 
     return false;
+    }
+
+    bool Board::placeRoad(Player &player, int edge){
+
+        if (edge < 0 || edge > 71) // Check if the edge is out of range
+        {
+            cout << "Invalid edge, edge is out of range, you chose: " << edge <<endl;
+            return false;
+        }
+
+        
+            Edge currentEdge = edges[(size_t)edge];
+            
+                // Check if the edge is already occupied
+                if (currentEdge.owner != "none")
+                {
+                    cout << "Edge " << edge << " is already owned by " << currentEdge.owner << endl;
+                    return false;
+                }
+
+                // Check if the edge has an adjacent settlement owned by the player
+                for (size_t j = 0; j < currentEdge.neighbors_vertice.size(); j++)
+                {
+                    int neighborVertexIndex = currentEdge.neighbors_vertice[j];
+                    if (vertices[(size_t)neighborVertexIndex].getOwner() == player.getName())
+                    {
+                        // Place the road at the edge
+                        currentEdge.owner = player.getName();
+                        player.addRoadsNum(1);
+                        cout << "Road placed successfully at edge " << edge << "." << endl;
+                        return true;
+                    }
+                }
+
+                //check if the edge has an adjacent road owned by the player    
+                for (size_t j = 0; j < currentEdge.neighbors_edges.size(); j++)
+                {
+                    int neighborEdgeIndex = currentEdge.neighbors_edges[j];
+                    if (edges[(size_t)neighborEdgeIndex].owner == player.getName()) // if the edge has an adjacent road owned by the player
+                    {
+                        //check if the  adjacent edge has an adjacent settlement owned by the player
+                        for (size_t k = 0; k < edges[(size_t)neighborEdgeIndex].neighbors_vertice.size(); k++)
+                        {
+                            int neighborVertexIndex = edges[(size_t)neighborEdgeIndex].neighbors_vertice[k];
+                            if (vertices[(size_t)neighborVertexIndex].getOwner() == player.getName()) // if the adjacent edge has an adjacent settlement owned by the player
+                            {
+                                // Place the road at the edge
+                                currentEdge.owner = player.getName();
+                                player.addRoadsNum(1);
+                                cout << "Road placed successfully at edge " << edge << "." << endl;
+                                return true;
+                            }
+                        }
+                        
+                    }
+                }
+
+        return false;
+    }
+
+    bool Board::upgradeSettlementToCity(Player &player, int vertex)
+    {
+        if (vertex < 0 || vertex >= 54)
+        {
+            cout << "Invalid vertex, vertex is out of range, you chose: " << vertex <<endl;
+            return false;
+        }
+
+        Vertex &currentVertex = vertices[(size_t)vertex];
+        if (currentVertex.getOwner() != player.getName())
+        {
+            cout << "Vertex " << vertex << " is not owned by " << player.getName() << endl;
+            return false;
+        }
+
+        if (currentVertex.getType() != "settlement")
+        {
+            cout << "Vertex " << vertex << " is not a settlement" << endl;
+            return false;
+        }
+
+        currentVertex.setType("city");
+        cout << "Settlement at vertex " << vertex << " upgraded to a city." << endl;
+
+        return true;
+
+
+    }
+
+    string Board::printVertex(Vertex vertex)
+     {
+    return vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")";
+     }
+
+    string printTile( Tile& tile) {
+    return tile.getType() + "[" + to_string(tile.getNumber()) + "]";
+    }
+
+    string printRoad(Edge edge, string direction) 
+    {
+        return edge.owner + direction;
+    }
+
+
+
+//     void Board::printBoard()  {
+//     std::cout << "                         " << printVertex(vertices[0]) << "         " << printVertex(vertices[1]) << "         " << printVertex(vertices[2]) << std::endl;
+//     std::cout << "                        / \\       / \\       / \\       / \\" << std::endl;
+//     std::cout << "          " << printVertex(vertices[3]) << " " << printRoad(edges[0], "/") << "   " << printRoad(edges[1], "\\") << " " << printVertex(vertices[4]) << " " << printRoad(edges[2], "/") << "   " << printRoad(edges[3], "\\") << " " << printVertex(vertices[5]) << " " << printRoad(edges[4], "/") << "   " << printRoad(edges[5], "\\") << " " << printVertex(vertices[6]) << std::endl;
+//     std::cout << "          " << printTile(tiles[0][0]) << "       " << printTile(tiles[0][1]) << "       " << printTile(tiles[0][2]) << std::endl;
+//     std::cout << "          " << printRoad(edges[6], "/") << "   " << printRoad(edges[7], "\\") << " " << printVertex(vertices[7]) << " " << printRoad(edges[8], "/") << "   " << printRoad(edges[9], "\\") << " " << printVertex(vertices[8]) << " " << printRoad(edges[10], "/") << "   " << printRoad(edges[11], "\\") << " " << printVertex(vertices[9]) << std::endl;
+//     std::cout << "         / \\       / \\       / \\       / \\" << std::endl;
+//     std::cout << " " << printVertex(vertices[10]) << " " << printRoad(edges[12], "/") << "   " << printRoad(edges[13], "\\") << " " << printVertex(vertices[11]) << " " << printRoad(edges[14], "/") << "   " << printRoad(edges[15], "\\") << " " << printVertex(vertices[12]) << " " << printRoad(edges[16], "/") << "   " << printRoad(edges[17], "\\") << " " << printVertex(vertices[13]) << " " << printRoad(edges[18], "/") << "   " << printRoad(edges[19], "\\") << " " << printVertex(vertices[14]) << std::endl;
+//     std::cout << " " << printTile(tiles[1][0]) << "       " << printTile(tiles[1][1]) << "       " << printTile(tiles[1][2]) << "       " << printTile(tiles[1][3]) << std::endl;
+//     std::cout << " " << printRoad(edges[20], "/") << "   " << printRoad(edges[21], "\\") << " " << printVertex(vertices[15]) << " " << printRoad(edges[22], "/") << "   " << printRoad(edges[23], "\\") << " " << printVertex(vertices[16]) << " " << printRoad(edges[24], "/") << "   " << printRoad(edges[25], "\\") << " " << printVertex(vertices[17]) << " " << printRoad(edges[26], "/") << "   " << printRoad(edges[27], "\\") << " " << printVertex(vertices[18]) << " " << printRoad(edges[28], "/") << "   " << printRoad(edges[29], "\\") << " " << printVertex(vertices[19]) << " " << printRoad(edges[30], "/") << "   " << printRoad(edges[31], "\\") << " " << printVertex(vertices[20]) << std::endl;
+//     std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
+//     std::cout << " " << printVertex(vertices[21]) << " " << printRoad(edges[32], "/") << "   " << printRoad(edges[33], "\\") << " " << printVertex(vertices[22]) << " " << printRoad(edges[34], "/") << "   " << printRoad(edges[35], "\\") << " " << printVertex(vertices[23]) << " " << printRoad(edges[36], "/") << "   " << printRoad(edges[37], "\\") << " " << printVertex(vertices[24]) << " " << printRoad(edges[38], "/") << "   " << printRoad(edges[39], "\\") << " " << printVertex(vertices[25]) << " " << printRoad(edges[40], "/") << "   " << printRoad(edges[41], "\\") << " " << printVertex(vertices[26]) << std::endl;
+//     std::cout << " " << printTile(tiles[2][0]) << "       " << printTile(tiles[2][1]) << "       " << printTile(tiles[2][2]) << "       " << printTile(tiles[2][3]) << "       " << printTile(tiles[2][4]) << std::endl;
+//     std::cout << " " << printRoad(edges[42], "/") << "   " << printRoad(edges[43], "\\") << " " << printVertex(vertices[27]) << " " << printRoad(edges[44], "/") << "   " << printRoad(edges[45], "\\") << " " << printVertex(vertices[28]) << " " << printRoad(edges[46], "/") << "   " << printRoad(edges[47], "\\") << " " << printVertex(vertices[29]) << " " << printRoad(edges[48], "/") << "   " << printRoad(edges[49], "\\") << " " << printVertex(vertices[30]) << " " << printRoad(edges[50], "/") << "   " << printRoad(edges[51], "\\") << " " << printVertex(vertices[31]) << std::endl;
+//     std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
+//     std::cout << " " << printVertex(vertices[32]) << " " << printRoad(edges[52], "/") << "   " << printRoad(edges[53], "\\") << " " << printVertex(vertices[33]) << " " << printRoad(edges[54], "/") << "   " << printRoad(edges[55], "\\") << " " << printVertex(vertices[34]) << " " << printRoad(edges[56], "/") << "   " << printRoad(edges[57], "\\") << " " << printVertex(vertices[35]) << " " << printRoad(edges[58], "/") << "   " << printRoad(edges[59], "\\") << " " << printVertex(vertices[36]) << std::endl;
+//     std::cout << " " << printTile(tiles[3][0]) << "       " << printTile(tiles[3][1]) << "       " << printTile(tiles[3][2]) << "       " << printTile(tiles[3][3]) << std::endl;
+//     std::cout << " " << printRoad(edges[60], "/") << "   " << printRoad(edges[61], "\\") << " " << printVertex(vertices[37]) << " " << printRoad(edges[62], "/") << "   " << printRoad(edges[63], "\\") << " " << printVertex(vertices[38]) << " " << printRoad(edges[64], "/") << "   " << printRoad(edges[65], "\\") << " " << printVertex(vertices[39]) << " " << printRoad(edges[66], "/") << "   " << printRoad(edges[67], "\\") << " " << printVertex(vertices[40]) << " " << printRoad(edges[68], "/") << "   " << printRoad(edges[69], "\\") << " " << printVertex(vertices[41]) << std::endl;
+//     std::cout << "       / \\       / \\       / \\       / \\" << std::endl;
+//     std::cout << "      " << printVertex(vertices[42]) << "         " << printVertex(vertices[43]) << "         " << printVertex(vertices[44]) << "         " << printVertex(vertices[45]) << std::endl;
+// }
+
+void Board::printBoard()  {
+    try {
+        // Layer 1
+        std::cout << "                         " << printVertex(vertices.at(0)) << "         " << printVertex(vertices.at(1)) << "         " << printVertex(vertices.at(2)) << std::endl;
+        std::cout << "                        / \\       / \\       / \\       / \\" << std::endl;
+        std::cout << "          " << printVertex(vertices.at(3)) << " " << printRoad(edges.at(0), "/   ") << printRoad(edges.at(1), "\\") << " " << printVertex(vertices.at(4)) << " " << printRoad(edges.at(2), "/   ") << printRoad(edges.at(3), "\\") << " " << printVertex(vertices.at(5)) << " " << printRoad(edges.at(4), "/   ") << printRoad(edges.at(5), "\\") << " " << printVertex(vertices.at(6)) << std::endl;
+        std::cout << "          " << printTile(tiles.at(0).at(0)) << "       " << printTile(tiles.at(0).at(1)) << "       " << printTile(tiles.at(0).at(2)) << std::endl;
+        
+        // Layer 2
+        std::cout << "          " << printRoad(edges.at(6), "/   ") << printRoad(edges.at(7), "\\") << " " << printVertex(vertices.at(7)) << " " << printRoad(edges.at(8), "/   ") << printRoad(edges.at(9), "\\") << " " << printVertex(vertices.at(8)) << " " << printRoad(edges.at(10), "/   ") << printRoad(edges.at(11), "\\") << " " << printVertex(vertices.at(9)) << std::endl;
+        std::cout << "         / \\       / \\       / \\       / \\" << std::endl;
+        std::cout << " " << printVertex(vertices.at(10)) << " " << printRoad(edges.at(12), "/   ") << printRoad(edges.at(13), "\\") << " " << printVertex(vertices.at(11)) << " " << printRoad(edges.at(14), "/   ") << printRoad(edges.at(15), "\\") << " " << printVertex(vertices.at(12)) << " " << printRoad(edges.at(16), "/   ") << printRoad(edges.at(17), "\\") << " " << printVertex(vertices.at(13)) << " " << printRoad(edges.at(18), "/   ") << printRoad(edges.at(19), "\\") << " " << printVertex(vertices.at(14)) << std::endl;
+        std::cout << " " << printTile(tiles.at(1).at(0)) << "       " << printTile(tiles.at(1).at(1)) << "       " << printTile(tiles.at(1).at(2)) << "       " << printTile(tiles.at(1).at(3)) << std::endl;
+        
+        // Layer 3
+        std::cout << " " << printRoad(edges.at(20), "/   ") << printRoad(edges.at(21), "\\") << " " << printVertex(vertices.at(15)) << " " << printRoad(edges.at(22), "/   ") << printRoad(edges.at(23), "\\") << " " << printVertex(vertices.at(16)) << " " << printRoad(edges.at(24), "/   ") << printRoad(edges.at(25), "\\") << " " << printVertex(vertices.at(17)) << " " << printRoad(edges.at(26), "/   ") << printRoad(edges.at(27), "\\") << " " << printVertex(vertices.at(18)) << " " << printRoad(edges.at(28), "/   ") << printRoad(edges.at(29), "\\") << " " << printVertex(vertices.at(19)) << " " << printRoad(edges.at(30), "/   ") << printRoad(edges.at(31), "\\") << " " << printVertex(vertices.at(20)) << std::endl;
+        std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
+        std::cout << " " << printVertex(vertices.at(21)) << " " << printRoad(edges.at(32), "/   ") << printRoad(edges.at(33), "\\") << " " << printVertex(vertices.at(22)) << " " << printRoad(edges.at(34), "/   ") << printRoad(edges.at(35), "\\") << " " << printVertex(vertices.at(23)) << " " << printRoad(edges.at(36), "/   ") << printRoad(edges.at(37), "\\") << " " << printVertex(vertices.at(24)) << " " << printRoad(edges.at(38), "/   ") << printRoad(edges.at(39), "\\") << " " << printVertex(vertices.at(25)) << " " << printRoad(edges.at(40), "/   ") << printRoad(edges.at(41), "\\") << " " << printVertex(vertices.at(26)) << std::endl;
+        std::cout << " " << printTile(tiles.at(2).at(0)) << "       " << printTile(tiles.at(2).at(1)) << "       " << printTile(tiles.at(2).at(2)) << "       " << printTile(tiles.at(2).at(3)) << "       " << printTile(tiles.at(2).at(4)) << std::endl;
+        
+        // Layer 4
+        std::cout << " " << printRoad(edges.at(42), "/   ") << printRoad(edges.at(43), "\\") << " " << printVertex(vertices.at(27)) << " " << printRoad(edges.at(44), "/   ") << printRoad(edges.at(45), "\\") << " " << printVertex(vertices.at(28)) << " " << printRoad(edges.at(46), "/   ") << printRoad(edges.at(47), "\\") << " " << printVertex(vertices.at(29)) << " " << printRoad(edges.at(48), "/   ") << printRoad(edges.at(49), "\\") << " " << printVertex(vertices.at(30)) << " " << printRoad(edges.at(50), "/   ") << printRoad(edges.at(51), "\\") << " " << printVertex(vertices.at(31)) << std::endl;
+        std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
+        std::cout << " " << printVertex(vertices.at(32)) << " " << printRoad(edges.at(52), "/   ") << printRoad(edges.at(53), "\\") << " " << printVertex(vertices.at(33)) << " " << printRoad(edges.at(54), "/   ") << printRoad(edges.at(55), "\\") << " " << printVertex(vertices.at(34)) << " " << printRoad(edges.at(56), "/   ") << printRoad(edges.at(57), "\\") << " " << printVertex(vertices.at(35)) << " " << printRoad(edges.at(58), "/   ") << printRoad(edges.at(59), "\\") << " " << printVertex(vertices.at(36)) << std::endl;
+        std::cout << " " << printTile(tiles.at(3).at(0)) << "       " << printTile(tiles.at(3).at(1)) << "       " << printTile(tiles.at(3).at(2)) << "       " << printTile(tiles.at(3).at(3)) << std::endl;
+        
+        // Layer 5
+        std::cout << " " << printRoad(edges.at(60), "/   ") << printRoad(edges.at(61), "\\") << " " << printVertex(vertices.at(37)) << " " << printRoad(edges.at(62), "/   ") << printRoad(edges.at(63), "\\") << " " << printVertex(vertices.at(38)) << " " << printRoad(edges.at(64), "/   ") << printRoad(edges.at(65), "\\") << " " << printVertex(vertices.at(39)) << " " << printRoad(edges.at(66), "/   ") << printRoad(edges.at(67), "\\") << " " << printVertex(vertices.at(40)) << " " << printRoad(edges.at(68), "/   ") << printRoad(edges.at(69), "\\") << " " << printVertex(vertices.at(41)) << std::endl;
+        std::cout << "       / \\       / \\       / \\       / \\" << std::endl;
+        std::cout << "      " << printVertex(vertices.at(42)) << "         " << printVertex(vertices.at(43)) << "         " << printVertex(vertices.at(44)) << "         " << printVertex(vertices.at(45)) << std::endl;
+    } catch (const std::out_of_range &e) {
+        std::cerr << "Error: Out of range - " << e.what() << std::endl;
+    }
 }
 
-    // bool Board::placeSettlement(Player &player, int vertex)
-    // {
-    
 
-    //     if(vertex < 0 || vertex >= 54)
-    //     {
-    //         cout << "Invalid vertex, vertex is out of range, you chose: " << vertex << "" << endl;
-    //         return false;
-    //     }
 
-    //     for(size_t i = 0; i < vertices.size(); i++)
-    //     {
-    //         bool flag = true;
-            
-    //         if(vertices[i].number == vertex) //get the vertex
-    //         {
-    //             if(vertices[i].owner != "none") // Check if the vertex is available
-    //             {
-    //                 cout << "Vertex " << vertex << " is already owned by " << vertices[i].owner << std::endl;
-    //                 flag = false;
-    //                 return false;
-    //             }
-
-    //             // Check if the vertex has an adjacent settlement
-    //             for(size_t j = 0; j < vertices[i].neighbors_vertice.size(); j++)
-    //             {
-    //                 if(vertices[vertices[i].neighbors_vertice[j]].owner != player.getName()) // Check if the vertex has an adjacent settlement
-    //                 {
-    //                     flag = false;
-    //                 }
-    //             }
-
-    //             // Check if the vertex has no adjacent road(if it is not the first turn)
-    //             if(player.getPoints() > 2)
-    //             {
-    //                 for(size_t j = 0; j < vertices[i].neighbors_edges.size(); j++)
-    //                 {
-    //                     if(edges[vertices[i].neighbors_edges[j]].owner != player.getName()) // Check if the vertex has no adjacent road
-    //                     {
-    //                         flag = false;
-    //                     }
-                    
-    //                  }
-    //              }
-
-    //             if(flag)
-    //             {
-    //                 vertices[i].owner = player.getName();
-    //                 vertices[i].type = "settlement";
-    //                 return true;
-    //             }
-    
-    //         }
-    //     }
-    // return false;   
-    // }
-
-    void Board::printBoard() {
+    //void Board::printBoard() {
 
         //print the board 
 
@@ -238,14 +342,155 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
     //     cout << "               / \\       / \\       / \\" << endl;
     //     cout << "               (" << vertices[43].number << ")       (" << vertices[44].number << ")       (" << vertices[45].number << ")" << endl;
     // 
-    }
+    //}
+
+
+//     void Board::distributeResources(Player &player, int diceRoll) {
+//         cout << "Distributing resources for dice roll " << diceRoll << "..." << endl;
+//     // Iterate over all tiles
+//     for (size_t layer = 0; layer < tiles.size(); ++layer) {
+//         for (size_t i = 0; i < tiles[layer].size(); ++i) {
+//             // Get the tile at the current position
+//             cout << "i" << i << endl;
+//             Tile &currentTile = tiles[layer][i];
+
+//             cout << "Checking tile at layer " << layer << ", index " << i << " with number " << currentTile.getNumber() << " and type " << currentTile.getType() << endl;
+
+
+//             // Check if the tile's number is equal to the dice roll
+//             if (currentTile.getNumber() == diceRoll) {
+//                 cout << "Tile " << layer << ", " << i << " matches the dice roll (" << diceRoll << ")." << endl;
+//                 // Iterate over all vertices of the tile
+//                 for (size_t j = 0; j < currentTile.vertices.size(); ++j) {
+//                     // Get the vertex directly
+//                     Vertex &currentVertex = currentTile.vertices[j];
+
+//                     // Check if the vertex is owned by the player
+//                     std::string owner = currentVertex.getOwner();
+//                     if (owner == player.getName()) {
+//                         cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << "." << endl;
+//                         // Check if the vertex is a settlement
+//                         if (currentVertex.getType() == "settlement") {
+//                             // Add 1 resource of the tile's type to the player
+//                             player.addResource(currentTile.getType(), 1);
+//                             // Print a message that the player received 1 resource of the tile's type from the settlement at the vertex
+//                             std::cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << std::endl;
+//                         }
+//                         // Check if the vertex is a city
+//                         else if (currentVertex.getType() == "city") {
+//                             // Add 2 resources of the tile's type to the player
+//                             player.addResource(currentTile.getType(), 2);
+//                             // Print a message that the player received 2 resources of the tile's type from the city at the vertex
+//                             std::cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << std::endl;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
+    /*
+    Iterate over all tiles
+     Get the tile at index i
+        Check if the tile's number is equal to the dice roll
+            Iterate over all vertices of the tile
+                Get the vertex at the vertex index
+                Check if the vertex is owned by the player
+                    Check if the vertex is a settlement
+                        Add 1 resource of the tile's type to the player
+                        Print a message that the player received 1 resource of the tile's type from the settlement at the vertex
+                    Check if the vertex is a city
+                        Add 2 resources of the tile's type to the player
+                        Print a message that the player received 2 resources of the tile's type from the city at the vertex
+
+
+    */
+    void Board::distributeResources(Player &player, int diceRoll)
+    {
+        cout << "Distributing resources for dice roll " << diceRoll << "...\n";
+        for(int i =0 ;i< 19; i++)// Iterate over all tiles
+       {
+        //cout << "Checking tile at index " << i << " with number " << getTile(i).getNumber() << " and type " << getTile(i).getType() << endl;
+            Tile  &currentTile = getTile(i);
+             // Check if the tile's number is equal to the dice roll
+            if (currentTile.getNumber() == diceRoll) 
+            {
+                cout << "Tile " << i << " matches the dice roll (" << diceRoll << ").\n";
+
+                // Iterate over all vertices of the tile
+                for(size_t vertexIndex=0;vertexIndex < currentTile.vertices.size(); vertexIndex++)
+                {
+                    Vertex &currentVertex = getVertex(vertexIndex);
+                    // Check if the vertex is owned by the player
+                    if(currentVertex.getOwner() == player.getName())
+                    {
+                        cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << ".\n";
+                        // Check if the vertex is a settlement
+                        if(currentVertex.getType() == "settlement")
+                        {
+                            player.addResource(currentTile.getType(),1);
+                            cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
+                        }
+                        // Check if the vertex is a city
+                        else if(currentVertex.getType() == "city")
+                        {
+                            player.addResource(currentTile.getType(),2);
+                            cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
+                        }
+                    }
+                }
+                    
+            }
+
+
+
+
+
+       }
 
     
+    }
+
+
+    // void Board::distributeResources(Player &player, int diceRoll)
+    // {
+    //     for(int i =0 ;i< tiles.size(); i++){ // for each tile
+
+    //         Tile  currentTile = getTile(i);
+
+    //         if(currentTile.getNumber() == diceRoll) //
+    //         {
+    //             for(int vertexIndex : currentTile.vertices) // for each vertex of the tile
+    //             {
+    //                 Vertex &currentVertex = getVertex(vertexIndex);
+    //                 if(currentVertex.getOwner() == player.getName())// if the vertex is owned by the player
+    //                 {
+    //                     //if the vertex is a settlement
+    //                     if(currentVertex.getType() == "settlement")
+    //                     {
+    //                         player.addResource(currentTile.getType(),1);
+    //                         cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
+    //                     }
+    //                     //if the vertex is a city
+    //                     else if(currentVertex.getType() == "city")
+    //                     {
+    //                         player.addResource(currentTile.getType(),2);
+    //                         cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
+    //                     }
+    //                 }
+    //             }
+                 
+    //         }
+                
+    //     }
+
+
+    // }
 
      void Board::initializeVerticesNeighbors()
     {
-        cout << "Initializing vertices neighbors..." << endl;
-        // Manually setting neighbors based on a Catan-like hexagonal layout
         vertices[0].neighbors_vertice = {1, 8};
         vertices[1].neighbors_vertice = {0, 2};
         vertices[2].neighbors_vertice = {1, 3, 10};
@@ -352,12 +597,10 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
         vertices[51].neighbors_edges = {64, 69, 70};
         vertices[52].neighbors_edges = {70, 71};
         vertices[53].neighbors_edges = {65, 71};
-        cout << "Vertices neighbors initialized." << endl;
     }
 
     void Board::initializeEdgesNeighbors()
     {
-        cout << "Initializing edges neighbors..." << endl; 
         edges[0].neighbors_vertice = {0, 1};
         edges[1].neighbors_vertice = {1, 2};
         edges[2].neighbors_vertice = {2, 3};
@@ -504,127 +747,74 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Stone)
         edges[69].neighbors_edges = {64, 68, 70};
         edges[70].neighbors_edges = {64, 69, 71};
         edges[71].neighbors_edges = {65, 70};
-        cout << "Edges neighbors initialized." << endl;
     }
 
-void Board::assignVerticesAndEdgesToTiles() {
-    // Ensure vertexIndices and edgeIndices are properly defined and populated
-    vector<vector<int>> vertexIndices = {
-        {0, 1, 2, 8, 9, 10}, {2, 3, 4, 10, 11, 12}, {4, 5, 6, 12, 13, 14},
-        {7, 8, 9, 17, 18, 19}, {9, 10, 11, 19, 20, 21}, {11, 12, 13, 21, 22, 23}, {13, 14, 15, 23, 24, 25},
-        {16, 17, 18, 27, 28, 29}, {18, 19, 20, 29, 30, 31}, {20, 21, 22, 31, 32, 33}, {22, 23, 24, 33, 34, 35}, {24, 25, 26, 35, 36, 37},
-        {28, 29, 30, 38, 39, 40}, {30, 31, 32, 40, 41, 42}, {32, 33, 34, 42, 43, 44}, {34, 35, 36, 44, 45, 46},
-        {39, 40, 41, 47, 48, 49}, {41, 42, 43, 49, 50, 51}, {43, 44, 45, 51, 52, 53}
-    };
+    void Board::assignVerticesAndEdgesToTiles() {
+        // Ensure vertexIndices and edgeIndices are properly defined and populated
+        vector<vector<int>> vertexIndices = {
+            {0, 1, 2, 8, 9, 10}, {2, 3, 4, 10, 11, 12}, {4, 5, 6, 12, 13, 14},
+            {7, 8, 9, 17, 18, 19}, {9, 10, 11, 19, 20, 21}, {11, 12, 13, 21, 22, 23}, {13, 14, 15, 23, 24, 25},
+            {16, 17, 18, 27, 28, 29}, {18, 19, 20, 29, 30, 31}, {20, 21, 22, 31, 32, 33}, {22, 23, 24, 33, 34, 35}, {24, 25, 26, 35, 36, 37},
+            {28, 29, 30, 38, 39, 40}, {30, 31, 32, 40, 41, 42}, {32, 33, 34, 42, 43, 44}, {34, 35, 36, 44, 45, 46},
+            {39, 40, 41, 47, 48, 49}, {41, 42, 43, 49, 50, 51}, {43, 44, 45, 51, 52, 53}
+        };
 
-    vector<vector<int>> edgeIndices = {
-        {0, 1, 6, 7, 11, 12}, {2, 3, 7, 8, 13, 14}, {4, 5, 8, 9, 15, 16},
-        {10, 11, 18, 19, 24, 25}, {12, 13, 19, 20, 26, 27}, {14, 15, 20, 21, 28, 29}, {16, 17, 21, 22, 30, 31},
-        {23, 24, 33, 34, 39, 40}, {25, 26, 34, 35, 41, 42}, {27, 28, 35, 36, 43, 44}, {29, 30, 36, 37, 45, 46}, {31, 32, 37, 38, 47, 48},
-        {40, 41, 49, 50, 54, 55}, {42, 43, 50, 51, 56, 57}, {44, 45, 51, 52, 58, 59}, {46, 47, 52, 53, 60, 61},
-        {55, 56, 62, 63, 66, 67}, {57, 58, 63, 64, 68, 69}, {59, 60, 64, 65, 70, 71}
-    };
+        vector<vector<int>> edgeIndices = {
+            {0, 1, 6, 7, 11, 12}, {2, 3, 7, 8, 13, 14}, {4, 5, 8, 9, 15, 16},
+            {10, 11, 18, 19, 24, 25}, {12, 13, 19, 20, 26, 27}, {14, 15, 20, 21, 28, 29}, {16, 17, 21, 22, 30, 31},
+            {23, 24, 33, 34, 39, 40}, {25, 26, 34, 35, 41, 42}, {27, 28, 35, 36, 43, 44}, {29, 30, 36, 37, 45, 46}, {31, 32, 37, 38, 47, 48},
+            {40, 41, 49, 50, 54, 55}, {42, 43, 50, 51, 56, 57}, {44, 45, 51, 52, 58, 59}, {46, 47, 52, 53, 60, 61},
+            {55, 56, 62, 63, 66, 67}, {57, 58, 63, 64, 68, 69}, {59, 60, 64, 65, 70, 71}
+        };
 
-    size_t tileIndex = 0;
-    for (size_t layer = 0; layer < tiles.size(); ++layer) {
-        for (size_t i = 0; i < tiles[layer].size(); ++i, ++tileIndex) {
-            Tile &tile = tiles[layer][i];
+        size_t tileIndex = 0;
+        for (size_t layer = 0; layer < tiles.size(); ++layer) {
+            for (size_t i = 0; i < tiles[layer].size(); ++i, ++tileIndex) {
+                Tile &tile = tiles[layer][i];
 
-            // Assign vertices
-            for (int vertexIndex : vertexIndices[tileIndex]) {
-                if (vertexIndex < 0 || vertexIndex >= vertices.size()) {
-                    std::cerr << "Invalid vertex index " << vertexIndex << " for tile " << tileIndex << std::endl;
-                    exit(EXIT_FAILURE);
+                // Assign vertices to tile
+
+
+                for (int vertexIndex : vertexIndices[tileIndex]) {
+                    
+                    tile.vertices.push_back(vertices[(size_t)vertexIndex]);
                 }
-                tile.vertices.push_back(vertices[(size_t)vertexIndex]);
-            }
 
-            // Assign edges
-            for (int edgeIndex : edgeIndices[tileIndex]) {
-                if (edgeIndex < 0 || edgeIndex >= edges.size()) {
-                    std::cerr << "Invalid edge index " << edgeIndex << " for tile " << tileIndex << std::endl;
-                    exit(EXIT_FAILURE);
+                // Assign edges
+                for (int edgeIndex : edgeIndices[tileIndex]) {
+                    
+                    tile.edges.push_back(edges[(size_t)edgeIndex]);
                 }
-                tile.edges.push_back(edges[(size_t)edgeIndex]);
             }
         }
+
     }
 
-    cout << "Vertices and edges assigned to tiles." << std::endl;
-}
+               // Tile &getTile(int i);
+
+    Tile &Board::getTile(int i)
+    {
+        for (size_t layer = 0; layer < tiles.size(); ++layer) {
+            for (size_t j = 0; j < tiles[layer].size(); ++j) {
+                if (tiles[layer][j].getNumber() == i) {
+                    return tiles[layer][j];
+                }
+            }
+        }
+        throw invalid_argument("Tile not found");
+    }
+
+    Vertex &Board::getVertex(int i)
+    {
+        for (size_t j = 0; j < vertices.size(); ++j) {
+            if (vertices[j].getNumber() == i) {
+                return vertices[j];
+            }
+        }
+        throw invalid_argument("Vertex not found");
+    }
 
 
-    // void Board::assignVerticesAndEdgesToTiles() {
-    //     size_t vertex_index = 0;
-    //     size_t edge_index = 0;
 
-    //     // Manually assigning vertices and edges to each tile based on a Catan-like hexagonal layout
-    //        // Loop through each layer and assign vertices and edges to the tiles
-    //             int layer_size[] = {3, 4, 5, 4, 3}; // The number of tiles in each layer
-    //             for (size_t layer = 0; layer < 5; ++layer) {
-    //                 for (size_t i = 0; i < layer_size[layer]; ++i) {
-    //                     Tile& tile = tiles[layer][i];
-        
-    //                     tile.vertices.push_back(vertices[vertex_index]);
-    //                     tile.vertices.push_back(vertices[vertex_index + 1]);
-    //                     tile.vertices.push_back(vertices[vertex_index + 2]);
-        
-    //                     tile.edges.push_back(edges[edge_index]);
-    //                     tile.edges.push_back(edges[edge_index + 1]);
-    //                     tile.edges.push_back(edges[edge_index + 2]);
-        
-    //                     vertex_index += 2;
-    //                     edge_index += 3;
-    //                 }
-    //             }
-    //             cout << "Vertices and edges  finish assigned to tiles." << endl;
-    //         }
-       
-// void Board::assignVerticesAndEdgesToTiles()
-//     {
-//         cout << "Assigning vertices and edges to tiles..." << endl;
-//         // Manually assigning vertices to each tile based on a hexagonal layout
-//         tiles[0][0].vertices = {0, 1, 2, 8, 9, 10};
-//         tiles[0][1].vertices = {2, 3, 4, 10, 11, 12};
-//         tiles[0][2].vertices = {4, 5, 6, 12, 13, 14};
-//         tiles[1][0].vertices = {7, 8, 9, 17, 18, 19};
-//         tiles[1][1].vertices = {9, 10, 11, 19, 20, 21};
-//         tiles[1][2].vertices = {11, 12, 13, 21, 22, 23};
-//         tiles[1][3].vertices = {13, 14, 15, 23, 24, 25};
-//         tiles[2][0].vertices = {16, 17, 18, 27, 28, 29};
-//         tiles[2][1].vertices = {18, 19, 20, 29, 30, 31};
-//         tiles[2][2].vertices = {20, 21, 22, 31, 32, 33};
-//         tiles[2][3].vertices = {22, 23, 24, 33, 34, 35};
-//         tiles[2][4].vertices = {24, 25, 26, 35, 36, 37};
-//         tiles[3][0].vertices = {28, 29, 30, 38, 39, 40};
-//         tiles[3][1].vertices = {30, 31, 32, 40, 41, 42};
-//         tiles[3][2].vertices = {32, 33, 34, 42, 43, 44};
-//         tiles[3][3].vertices = {34, 35, 36, 44, 45, 46};
-//         tiles[4][0].vertices = {39, 40, 41, 47, 48, 49};
-//         tiles[4][1].vertices = {41, 42, 43, 49, 50, 51};
-//         tiles[4][2].vertices = {43, 44, 45, 51, 52, 53};
-
-//         // Manually assigning edges to each tile based on a hexagonal layout
-//         tiles[0][0].edges = {0, 1, 6, 7, 11, 12};
-//         tiles[0][1].edges = {2, 3, 7, 8, 13, 14};
-//         tiles[0][2].edges = {4, 5, 8, 9, 15, 16};
-//         tiles[1][0].edges = {10, 11, 18, 19, 24, 25};
-//         tiles[1][1].edges = {12, 13, 19, 20, 26, 27};
-//         tiles[1][2].edges = {14, 15, 20, 21, 28, 29};
-//         tiles[1][3].edges = {16, 17, 21, 22, 30, 31};
-//         tiles[2][0].edges = {23, 24, 33, 34, 39, 40};
-//         tiles[2][1].edges = {25, 26, 34, 35, 41, 42};
-//         tiles[2][2].edges = {27, 28, 35, 36, 43, 44};
-//         tiles[2][3].edges = {29, 30, 36, 37, 45, 46};
-//         tiles[2][4].edges = {31, 32, 37, 38, 47, 48};
-//         tiles[3][0].edges = {40, 41, 49, 50, 54, 55};
-//         tiles[3][1].edges = {42, 43, 50, 51, 56, 57};
-//         tiles[3][2].edges = {44, 45, 51, 52, 58, 59};
-//         tiles[3][3].edges = {46, 47, 52, 53, 60, 61};
-//         tiles[4][0].edges = {55, 56, 62, 63, 66, 67};
-//         tiles[4][1].edges = {57, 58, 63, 64, 68, 69};
-//         tiles[4][2].edges = {59, 60, 64, 65, 70, 71};
-//         cout << "Vertices and edges assigned to tiles." << endl;
-//     }
-
+    
 } // namespace ariel    

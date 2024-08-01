@@ -24,7 +24,6 @@ int main()
     // cout << "Please enter the names of the third player:" << endl;
     // cin >> name3;
 
-    cout << "Creating players..." << endl;
     Player p1(name1);
     cout << "Player " << name1 << " created." << endl;
     Player p2(name2);
@@ -32,16 +31,17 @@ int main()
     Player p3(name3);
     cout << "Player " << name3 << " created." << endl;
 
-    cout << "Creating Catan game..." << endl;
     Catan catan(p1, p2, p3); //create a new game with the 3 players
 
     Board board = catan.getBoard();
 
+    //print the board
+    //board.printBoard();
+
 
     catan.ChooseStartingPlayer(); 
-    catan.getBoard().printBoard(); // get the board of the game.
 
-        cout << "Starting of the game. Every player places two settlements and two roads." << endl;
+        cout << "-----Starting of the game. Every player places two settlements and two roads.-----" << endl;
         
 
         for(int i = 0; i < 3; i++)
@@ -50,7 +50,7 @@ int main()
             
            catan.placeSettlement(catan.getCurrentPlayer(), board);
 
-            //catan.placeRoad(catan.getCurrentPlayer(), board);
+            catan.placeRoad(catan.getCurrentPlayer(), board);
             catan.nextPlayer();
         }
         
@@ -62,9 +62,79 @@ int main()
             cout << "Player " << catan.getCurrentPlayer().getName() << " turn.2nd Settelment" << endl;
            catan.placeSettlement(catan.getCurrentPlayer(), board);
 
-            //catan.placeRoad(catan.getCurrentPlayer(), board);
+            catan.placeRoad(catan.getCurrentPlayer(), board);
             catan.previousPlayer();
         }
+
+        cout << "--------------Starting the normal rounds--------------------." << endl;
+        while(!catan.isGameFinished())
+        {
+            Player &player = catan.getCurrentPlayer();
+
+            cout << "Player " << catan.getCurrentPlayer().getName() << " turn." << endl;
+            
+            catan.rollDice();
+            catan.getCurrentPlayer().printResources();
+
+            cout << "Please enter the action you want to do:" << endl;
+            cout << "1. Build a settlement" << endl;
+            cout << "2. Build a road" << endl;
+            cout << "3. Upgrade a settlement to a city" << endl;
+            cout << "4. Buy a development card" << endl;
+            cout << "5. Play a development card" << endl;
+            cout << "6. Make a trade" << endl;
+            cout << "7. Print details" << endl;
+            cout << "8. End turn" << endl;
+            cout << "0. Exit" << endl;
+
+
+            int action = -1;
+            cin >> action;
+
+            switch(action)
+            {
+                case 1: //build a settlement
+                    catan.placeSettlement(player, board);
+                    break;
+                
+                case 2: //build a road
+                    catan.placeRoad(player, board);
+                    break;
+
+                case 3: //upgrade a settlement to a city
+                    catan.upgradeSettlementToCity(player,board);
+                    break;
+                
+                case 4: //buy a development card
+                    //catan.buyDevelopmentCard(player);
+                    break;
+
+                case 5: //play a development card
+                    //catan.playDevelopmentCard(player);
+                    break;
+
+                case 6: //make a trade
+                    //catan.makeTrade(player);
+                    break;
+                case 7: //print details
+                    //catan.printDetails();
+                    break;
+                case 8: //end turn
+                    catan.nextPlayer();
+                    break;
+                case 0: //exit
+                    cout << "Exiting the game." << endl;
+                    return 0;
+                    break;
+                default:
+                    cout << "Invalid action." << endl;
+                    break;
+                
+            }
+        }    
+
+
+
 
 
 }
