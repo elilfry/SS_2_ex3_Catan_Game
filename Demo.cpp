@@ -32,9 +32,7 @@ int main()
     cout << "Player " << name3 << " created." << endl;
 
     Catan catan(p1, p2, p3); //create a new game with the 3 players
-
-    Board board = catan.getBoard();
-
+   Board &board = catan.getBoard();
     //print the board
     //board.printBoard();
 
@@ -67,13 +65,15 @@ int main()
         }
 
         cout << "--------------Starting the normal rounds--------------------." << endl;
+
+        
         while(!catan.isGameFinished())
         {
             Player &player = catan.getCurrentPlayer();
 
             cout << "Player " << catan.getCurrentPlayer().getName() << " turn." << endl;
             
-            catan.rollDice();
+            catan.rollDice(board);
             catan.getCurrentPlayer().printResources();
 
             cout << "Please enter the action you want to do:" << endl;
@@ -99,10 +99,12 @@ int main()
                 
                 case 2: //build a road
                     catan.placeRoad(player, board);
+
                     break;
 
                 case 3: //upgrade a settlement to a city
                     catan.upgradeSettlementToCity(player,board);
+
                     break;
                 
                 case 4: //buy a development card

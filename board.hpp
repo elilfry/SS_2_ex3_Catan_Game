@@ -46,11 +46,11 @@ namespace ariel {
 
             string getOwner() const
             {
-                return this->owner;
+                return owner;
             }
             void setOwner(string newOwner)
             {
-                this->owner = newOwner;
+                owner = newOwner;
             }
             string getType() const
             {
@@ -98,8 +98,8 @@ namespace ariel {
         int type; // "desert", "wood", "brick", "sheep", "wheat", "ore"
 
         public:
-            vector<ariel::Edge> edges;
-            vector<ariel::Vertex> vertices;
+            vector<int> edges;
+            vector<int> vertices;
 
             
             //set default ctor
@@ -122,23 +122,24 @@ namespace ariel {
                 return this->type;
             }
 
-            friend ostream& operator<<(ostream& os, const Tile& t)
-            {
-                os << t.type << ","  << t.number;
-                return os;
-            }
+            // friend ostream& operator<<(ostream& os, const Tile& t)
+            // {
+            //     os << t.type << ","  << t.number;
+            //     return os;
+            // }
 
     };
 
     class Board
     {
         private:
-            vector<Vertex> vertices;
-            vector<Edge> edges;
-            vector<vector<Tile>> tiles;
+           
 
         public:
-         
+             vector<vector<Tile>> tiles;
+              vector<Vertex> vertices;
+            vector<Edge> edges;
+
             Board();
             void initializeVerticesNeighbors(); ///////---------------------------------
             void initializeEdgesNeighbors(); ///---------------------------------

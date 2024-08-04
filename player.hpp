@@ -56,6 +56,7 @@ namespace ariel
         int getTotalResources();
         void sumIs7();
         void printResources();
+
     };
 } // namespace ariel
 

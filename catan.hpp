@@ -3,6 +3,10 @@
 
 #include "player.hpp"
 #include "board.hpp"
+#include <random>
+#include <ctime>
+#include <cstdlib> 
+
 
 namespace ariel
 {
@@ -10,7 +14,7 @@ namespace ariel
     {
     private:
         Board board;
-        vector<Player*> players;
+        vector<Player*> players; ///------
        int currentPlayer;
 
     public:
@@ -28,8 +32,9 @@ namespace ariel
         void upgradeSettlementToCity(Player &player,Board &board);
 
         bool isGameFinished();
-        void rollDice();
-
+        void rollDice( Board &board);
+        Player *getPlayerByName(string &name);
+        void distributeResources(int sum);
     };
 } // namespace ariel
 

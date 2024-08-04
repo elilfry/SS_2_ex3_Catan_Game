@@ -7,13 +7,20 @@ namespace ariel
     
     Catan::Catan(Player &p1, Player &p2, Player &p3)
     {
-        
+        // static int boardInIt = 0;
+        // boardInIt++;
             //initialize players
             players.push_back(&p1);
             players.push_back(&p2);
             players.push_back(&p3);
+        
+        // if(boardInIt == 0){
+        //      board = Board();
 
-            board = Board();
+        // }else{
+        //     cout << "The board is already initialized." << endl;
+            
+        // }
 
             this->ChooseStartingPlayer();
             
@@ -37,7 +44,7 @@ namespace ariel
 
     Board& Catan::getBoard()
     {
-        return this->board;
+        return board;
     }
 
     Player& Catan::getCurrentPlayer()
@@ -195,8 +202,9 @@ namespace ariel
                 return false;
             }
 
-    void Catan::rollDice()
+    void Catan::rollDice( Board &board)
     {
+        
         srand(time(0));
         int dice1 = rand() % 6 + 1;
         int dice2 = rand() % 6 + 1;
@@ -215,26 +223,26 @@ namespace ariel
         }
 
 
+
         for(int i=0; i<players.size(); i++)
         {
             //distribute resources
             
-         board.distributeResources(*players[(size_t)i], sum);
+        board.distributeResources(*players[(size_t)i], sum);
         }
 
     }
+    Player* Catan::getPlayerByName( string &name)
+    {
+        for (Player* player : players)
+    {
+        if (player->getName() == name)
+            return player;
+    }
+    return nullptr; // Player not found
+    }
 
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 

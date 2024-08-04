@@ -23,13 +23,7 @@ namespace ariel
     };
     // Initialize the 2D vector of tiles with the appropriate layer sizes 3 4 5 4 3 
     // and fill it with the appropriate tiles.
-vector<vector<Tile>> tiles = {
-        vector<Tile>(3),
-        vector<Tile>(4),
-        vector<Tile>(5),
-        vector<Tile>(4),
-        vector<Tile>(3)
-    };    
+
 
       
 
@@ -47,6 +41,16 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
     
     Board::Board()
     {
+        cout << "Board constructor1" << endl;
+
+        
+         tiles = {
+        vector<Tile>(3),
+        vector<Tile>(4),
+        vector<Tile>(5),
+        vector<Tile>(4),
+        vector<Tile>(3)
+    };    
         // Initialize tiles with resources and numbers
         size_t resourceIndex = 0;
         size_t numberIndex = 0;
@@ -59,7 +63,6 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
         }
 
         
-        
         // Initialize the board with 19 tiles.
         
         // Initialize the board with 54 vertices.
@@ -68,7 +71,6 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
             vertices.push_back(Vertex(i));
         }
         initializeVerticesNeighbors(); // -------------------------------------------
-
         // Initialize the board with 72 edges.
         for(int i = 0; i < 72; i++)
         {
@@ -135,9 +137,13 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
             }
 
             // Place the settlement at the vertex
-            currentVertex.setType("settlement");
-            currentVertex.setOwner(player.getName());
-            cout << "Settlement placed successfully at vertex " << vertex << "." << endl;
+            vertices[i].setType("settlement");
+              vertices[i].setOwner(player.getName());
+            cout << "Settlement placed successfully at vertex " << vertex <<  "to player " << currentVertex.getOwner() << endl;
+            //  for ( auto &vertex : vertices) 
+            //  {
+            //     cout << "Vertex " << vertex.getNumber() << " is owned by " << vertex.getOwner() << " with type " << vertex.getType() << endl;
+            //  }
             return true;
         }
     }
@@ -172,6 +178,8 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                         // Place the road at the edge
                         currentEdge.owner = player.getName();
                         player.addRoadsNum(1);
+                        player.removeResource(WOOD, 1);
+                        player.removeResource(BRICK, 1);
                         cout << "Road placed successfully at edge " << edge << "." << endl;
                         return true;
                     }
@@ -192,6 +200,8 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                                 // Place the road at the edge
                                 currentEdge.owner = player.getName();
                                 player.addRoadsNum(1);
+                                 player.removeResource(WOOD, 1);
+                                 player.removeResource(BRICK, 1);
                                 cout << "Road placed successfully at edge " << edge << "." << endl;
                                 return true;
                             }
@@ -225,6 +235,8 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
         }
 
         currentVertex.setType("city");
+        player.removeResource(WHEAT, 2);
+        player.removeResource(IRON, 3);
         cout << "Settlement at vertex " << vertex << " upgraded to a city." << endl;
 
         return true;
@@ -407,51 +419,155 @@ void Board::printBoard()  {
 
 
     */
+    // void Board::distributeResources(Player &player, int diceRoll)
+    // {// Iterate over all tiles
+    // //     for (size_t layer = 0; layer < tiles.size(); ++layer) {
+    // //         for (size_t i = 0; i < tiles[layer].size(); ++i) {
+    // //             // Get the tile at the current position
+    // //             Tile &currentTile = tiles[layer][i];
+    //     // Iterate over all tiles
+    //    for (size_t layer = 0; layer < tiles.size(); ++layer) {
+    //         for (size_t i = 0; i < tiles[layer].size(); ++i) {
+    //             // Get the tile at the current position
+    //             Tile &currentTile = tiles[layer][i];
+            
+
+    //         // Check if the tile has the rolled number
+    //         if (currentTile.getNumber() == diceRoll)
+    //         {
+    //             // Iterate over all vertices of the tile
+    //             for (int vertexId : currentTile.vertices)
+    //             {
+    //                 // Get the vertex at vertexId
+    //                 Vertex &vertex = getVertex(vertexId);
+
+    //                 // Check if the vertex is owned by the player
+    //                 if (vertex.getOwner() == player.getName())
+    //                 {
+    //                     // Check if the vertex is a city or a settlement
+    //                     if (vertex.getType() == "city")
+    //                     {
+    //                         // Add two resources of the tile type to the player's resources
+    //                         player.addResource(currentTile.getType(), 2);
+    //                         cout << player.getName() << " got 2 " << currentTile.getType() << " from a city." << endl;
+    //                     }
+    //                     else if (vertex.getType() == "settlement")
+    //                     {
+    //                         // Add one resource of the tile type to the player's resources
+    //                         player.addResource(currentTile.getType(), 1);
+    //                         cout << player.getName() << " got 1 " << currentTile.getType() << " from a settlement." << endl;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // }
+
+
+
+    // void Board::distributeResources(Player &player, int diceRoll)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     void Board::distributeResources(Player &player, int diceRoll)
     {
-        cout << "Distributing resources for dice roll " << diceRoll << "...\n";
-        for(int i =0 ;i< 19; i++)// Iterate over all tiles
-       {
-        //cout << "Checking tile at index " << i << " with number " << getTile(i).getNumber() << " and type " << getTile(i).getType() << endl;
-            Tile  &currentTile = getTile(i);
-             // Check if the tile's number is equal to the dice roll
-            if (currentTile.getNumber() == diceRoll) 
-            {
-                cout << "Tile " << i << " matches the dice roll (" << diceRoll << ").\n";
+        cout << "Distributing resources for dice roll " << diceRoll << "..." << endl;
 
-                // Iterate over all vertices of the tile
-                for(size_t vertexIndex=0;vertexIndex < currentTile.vertices.size(); vertexIndex++)
-                {
-                    Vertex &currentVertex = getVertex(vertexIndex);
-                    // Check if the vertex is owned by the player
-                    if(currentVertex.getOwner() == player.getName())
-                    {
-                        cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << ".\n";
-                        // Check if the vertex is a settlement
-                        if(currentVertex.getType() == "settlement")
-                        {
-                            player.addResource(currentTile.getType(),1);
-                            cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
-                        }
-                        // Check if the vertex is a city
-                        else if(currentVertex.getType() == "city")
-                        {
-                            player.addResource(currentTile.getType(),2);
-                            cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
+        // Iterate over all tiles
+        for (int i = 0; i < 19; i++)
+        {
+            // Get the tile at index i
+            Tile &currentTile = getTile(i);
+
+                //print tile info
+              //  cout << "Checking tile at index " << i << " with number " << currentTile.getNumber() << " and type " << currentTile.getType() << endl;
+
+                // Check if the tile's number is equal to the dice roll
+                if (currentTile.getNumber() == diceRoll) {
+                   // cout << "Tile " <<  i << " matches the dice roll (" << diceRoll << ")." << endl;
+
+                    // Iterate over all vertices of the tile
+                    for (int vertexId : currentTile.vertices) {
+                    
+                        Vertex &currentVertex = getVertex(vertexId);
+                        //veterx info
+                        //cout << "Checking vertex " << currentVertex.getNumber() << " with owner " << currentVertex.getOwner() << " is equal to == " << player.getName() << endl;
+
+                        //cout << "Checking vertex " << currentVertex.getNumber() << " with owner " << currentVertex.getOwner() << " is equal to == " << player.getName() << endl;
+                        // Check if the vertex is owned by the player
+                        if (currentVertex.getOwner() == player.getName()) {
+                            cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << "." << endl;
+
+                            // Check if the vertex is a settlement
+                            if (currentVertex.getType() == "settlement") {
+                                player.addResource(currentTile.getType(), 1);
+                              //  cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
+                            }
+                            // Check if the vertex is a city
+                            else if (currentVertex.getType() == "city") {
+                                player.addResource(currentTile.getType(), 2);
+                               // cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
+                            }
                         }
                     }
                 }
-                    
-            }
-
-
-
-
-
-       }
-
-    
+            
+            
+        }
     }
+
+    // void Board::distributeResources(Player &player, int diceRoll)
+    // {
+    //     cout << "Distributing resources for dice roll " << diceRoll << "...\n";
+    //     for(int i =0 ;i< 19; i++)// Iterate over all tiles
+    //    {
+    //     //cout << "Checking tile at index " << i << " with number " << getTile(i).getNumber() << " and type " << getTile(i).getType() << endl;
+    //         Tile  &currentTile = getTile(i);
+    //          // Check if the tile's number is equal to the dice roll
+    //         if (currentTile.getNumber() == diceRoll) 
+    //         {
+    //             cout << "Tile " << i << " matches the dice roll (" << diceRoll << ").\n";
+
+    //             // Iterate over all vertices of the tile
+    //             for(size_t vertexIndex=0;vertexIndex < currentTile.vertices.size(); vertexIndex++)
+    //             {
+    //                 Vertex &currentVertex = getVertex(vertexIndex);
+    //                 // Check if the vertex is owned by the player
+    //                 if(currentVertex.getOwner() == player.getName())
+    //                 {
+    //                     cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << ".\n";
+    //                     // Check if the vertex is a settlement
+    //                     if(currentVertex.getType() == "settlement")
+    //                     {
+    //                         player.addResource(currentTile.getType(),1);
+    //                         cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
+    //                     }
+    //                     // Check if the vertex is a city
+    //                     else if(currentVertex.getType() == "city")
+    //                     {
+    //                         player.addResource(currentTile.getType(),2);
+    //                         cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
+    //                     }
+    //                 }
+    //             }
+                    
+    //         }
+    //    }
+    // }
 
 
     // void Board::distributeResources(Player &player, int diceRoll)
@@ -749,71 +865,89 @@ void Board::printBoard()  {
         edges[71].neighbors_edges = {65, 70};
     }
 
-    void Board::assignVerticesAndEdgesToTiles() {
-        // Ensure vertexIndices and edgeIndices are properly defined and populated
-        vector<vector<int>> vertexIndices = {
-            {0, 1, 2, 8, 9, 10}, {2, 3, 4, 10, 11, 12}, {4, 5, 6, 12, 13, 14},
-            {7, 8, 9, 17, 18, 19}, {9, 10, 11, 19, 20, 21}, {11, 12, 13, 21, 22, 23}, {13, 14, 15, 23, 24, 25},
-            {16, 17, 18, 27, 28, 29}, {18, 19, 20, 29, 30, 31}, {20, 21, 22, 31, 32, 33}, {22, 23, 24, 33, 34, 35}, {24, 25, 26, 35, 36, 37},
-            {28, 29, 30, 38, 39, 40}, {30, 31, 32, 40, 41, 42}, {32, 33, 34, 42, 43, 44}, {34, 35, 36, 44, 45, 46},
-            {39, 40, 41, 47, 48, 49}, {41, 42, 43, 49, 50, 51}, {43, 44, 45, 51, 52, 53}
-        };
-
-        vector<vector<int>> edgeIndices = {
-            {0, 1, 6, 7, 11, 12}, {2, 3, 7, 8, 13, 14}, {4, 5, 8, 9, 15, 16},
-            {10, 11, 18, 19, 24, 25}, {12, 13, 19, 20, 26, 27}, {14, 15, 20, 21, 28, 29}, {16, 17, 21, 22, 30, 31},
-            {23, 24, 33, 34, 39, 40}, {25, 26, 34, 35, 41, 42}, {27, 28, 35, 36, 43, 44}, {29, 30, 36, 37, 45, 46}, {31, 32, 37, 38, 47, 48},
-            {40, 41, 49, 50, 54, 55}, {42, 43, 50, 51, 56, 57}, {44, 45, 51, 52, 58, 59}, {46, 47, 52, 53, 60, 61},
-            {55, 56, 62, 63, 66, 67}, {57, 58, 63, 64, 68, 69}, {59, 60, 64, 65, 70, 71}
-        };
-
-        size_t tileIndex = 0;
-        for (size_t layer = 0; layer < tiles.size(); ++layer) {
-            for (size_t i = 0; i < tiles[layer].size(); ++i, ++tileIndex) {
-                Tile &tile = tiles[layer][i];
-
-                // Assign vertices to tile
-
-
-                for (int vertexIndex : vertexIndices[tileIndex]) {
-                    
-                    tile.vertices.push_back(vertices[(size_t)vertexIndex]);
-                }
-
-                // Assign edges
-                for (int edgeIndex : edgeIndices[tileIndex]) {
-                    
-                    tile.edges.push_back(edges[(size_t)edgeIndex]);
-                }
-            }
-        }
-
-    }
-
-               // Tile &getTile(int i);
-
-    Tile &Board::getTile(int i)
+     void Board::assignVerticesAndEdgesToTiles()
     {
-        for (size_t layer = 0; layer < tiles.size(); ++layer) {
-            for (size_t j = 0; j < tiles[layer].size(); ++j) {
-                if (tiles[layer][j].getNumber() == i) {
-                    return tiles[layer][j];
-                }
-            }
-        }
-        throw invalid_argument("Tile not found");
+
+        tiles[0][0].vertices = {0, 1, 2, 8, 9, 10};
+        tiles[0][1].vertices = {2, 3, 4, 10, 11, 12};
+        tiles[0][2].vertices = {4, 5, 6, 12, 13, 14};
+        tiles[1][0].vertices = {7, 8, 9, 17, 18, 19};
+        tiles[1][1].vertices = {9, 10, 11, 19, 20, 21};
+        tiles[1][2].vertices = {11, 12, 13, 21, 22, 23};
+        tiles[1][3].vertices = {13, 14, 15, 23, 24, 25};
+        tiles[2][0].vertices = {16, 17, 18, 27, 28, 29};
+        tiles[2][1].vertices = {18, 19, 20, 29, 30, 31};
+        tiles[2][2].vertices = {20, 21, 22, 31, 32, 33};
+        tiles[2][3].vertices = {22, 23, 24, 33, 34, 35};
+        tiles[2][4].vertices = {24, 25, 26, 35, 36, 37};
+        tiles[3][0].vertices = {28, 29, 30, 38, 39, 40};
+        tiles[3][1].vertices = {30, 31, 32, 40, 41, 42};
+        tiles[3][2].vertices = {32, 33, 34, 42, 43, 44};
+        tiles[3][3].vertices = {34, 35, 36, 44, 45, 46};
+        tiles[4][0].vertices = {39, 40, 41, 47, 48, 49};
+        tiles[4][1].vertices = {41, 42, 43, 49, 50, 51};
+        tiles[4][2].vertices = {43, 44, 45, 51, 52, 53};
+
+        tiles[0][0].edges = {0, 1, 6, 7, 11, 12};
+        tiles[0][1].edges = {2, 3, 7, 8, 13, 14};
+        tiles[0][2].edges = {4, 5, 8, 9, 15, 16};
+        tiles[1][0].edges = {10, 11, 18, 19, 24, 25};
+        tiles[1][1].edges = {12, 13, 19, 20, 26, 27};
+        tiles[1][2].edges = {14, 15, 20, 21, 28, 29};
+        tiles[1][3].edges = {16, 17, 21, 22, 30, 31};
+        tiles[2][0].edges = {23, 24, 33, 34, 39, 40};
+        tiles[2][1].edges = {25, 26, 34, 35, 41, 42};
+        tiles[2][2].edges = {27, 28, 35, 36, 43, 44};
+        tiles[2][3].edges = {29, 30, 36, 37, 45, 46};
+        tiles[2][4].edges = {31, 32, 37, 38, 47, 48};
+        tiles[3][0].edges = {40, 41, 49, 50, 54, 55};
+        tiles[3][1].edges = {42, 43, 50, 51, 56, 57};
+        tiles[3][2].edges = {44, 45, 51, 52, 58, 59};
+        tiles[3][3].edges = {46, 47, 52, 53, 60, 61};
+        tiles[4][0].edges = {55, 56, 62, 63, 66, 67};
+        tiles[4][1].edges = {57, 58, 63, 64, 68, 69};
+        tiles[4][2].edges = {59, 60, 64, 65, 70, 71};
     }
 
-    Vertex &Board::getVertex(int i)
+    
+
+    Tile &Board::getTile(int i1)
     {
-        for (size_t j = 0; j < vertices.size(); ++j) {
-            if (vertices[j].getNumber() == i) {
-                return vertices[j];
-            }
+        size_t i = (size_t)i1;
+        if (i < 0 || i >= 19)
+        {
+            throw invalid_argument("Invalid tile index");
         }
-        throw invalid_argument("Vertex not found");
+        if (i < 3)
+        {
+            return tiles[0][i];
+        }
+        else if (i < 7)
+        {
+            return tiles[1][i - 3];
+        }
+        else if (i < 12)
+        {
+            return tiles[2][i - 7];
+        }
+        else if (i < 16)
+        {
+            return tiles[3][i - 12];
+        }
+        else
+        {
+            return tiles[4][i - 16];
+        }
     }
 
+    Vertex &Board::getVertex(int vertexId)
+    {
+        if (vertexId < 0 || vertexId >= vertices.size())
+        {
+            throw invalid_argument("Invalid vertex index");
+        }
+        return vertices[(size_t)vertexId];
+    }
 
 
     
