@@ -84,6 +84,27 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
     }
     Board::~Board() {    }         // Destructor implementation
 
+    string Tile::getResourceType(int resource)
+    {
+        switch (resource)
+        {
+        case WOOD:
+            return "Wood";
+        case BRICK:
+            return "Brick";
+        case SHEEP:
+            return "Sheep";
+        case WHEAT:
+            return "Wheat";
+        case IRON:
+            return "Iron";
+        case DESERT:
+            return "Desert";
+        default:
+            return "Unknown";
+        }
+    }
+
     bool Board::placeSettlement(Player &player, int vertex)
     {
         if (vertex < 0 || vertex >= 54)
@@ -115,14 +136,14 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                 }
             }
 
-            // Check if the vertex has no adjacent road (if it is not the first turn)
+            // Check if the vertex has no adjacent Road (if it is not the first turn)
             if (player.getPoints() >= 2)
             {
                 bool hasAdjacentRoad = false;
                 for (size_t j = 0; j < currentVertex.neighbors_edges.size(); j++)
                 {
                     int edgeIndex = currentVertex.neighbors_edges[j];
-                    if (edges[(size_t)edgeIndex].owner == player.getName())
+                    if (edges[(size_t)edgeIndex].getOwner() == player.getName())
                     {
                         hasAdjacentRoad = true;
                         break;
@@ -131,7 +152,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
 
                 if (!hasAdjacentRoad)
                 {
-                    cout << "Vertex " << vertex << " has no adjacent road owned by " << player.getName() << endl;
+                    cout << "Vertex " << vertex << " has no adjacent Road owned by " << player.getName() << endl;
                     return false;
                 }
             }
@@ -163,9 +184,9 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
             Edge currentEdge = edges[(size_t)edge];
             
                 // Check if the edge is already occupied
-                if (currentEdge.owner != "none")
+                if (currentEdge.getOwner() != "none")
                 {
-                    cout << "Edge " << edge << " is already owned by " << currentEdge.owner << endl;
+                    cout << "Edge " << edge << " is already owned by " << currentEdge.getOwner() << endl;
                     return false;
                 }
 
@@ -175,8 +196,8 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                     int neighborVertexIndex = currentEdge.neighbors_vertice[j];
                     if (vertices[(size_t)neighborVertexIndex].getOwner() == player.getName())
                     {
-                        // Place the road at the edge
-                        currentEdge.owner = player.getName();
+                        // Place the Road at the edge
+                        currentEdge.getOwner() = player.getName();
                         player.addRoadsNum(1);
                         player.removeResource(WOOD, 1);
                         player.removeResource(BRICK, 1);
@@ -185,11 +206,11 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                     }
                 }
 
-                //check if the edge has an adjacent road owned by the player    
+                //check if the edge has an adjacent Road owned by the player    
                 for (size_t j = 0; j < currentEdge.neighbors_edges.size(); j++)
                 {
                     int neighborEdgeIndex = currentEdge.neighbors_edges[j];
-                    if (edges[(size_t)neighborEdgeIndex].owner == player.getName()) // if the edge has an adjacent road owned by the player
+                    if (edges[(size_t)neighborEdgeIndex].getOwner() == player.getName()) // if the edge has an adjacent Road owned by the player
                     {
                         //check if the  adjacent edge has an adjacent settlement owned by the player
                         for (size_t k = 0; k < edges[(size_t)neighborEdgeIndex].neighbors_vertice.size(); k++)
@@ -197,8 +218,8 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                             int neighborVertexIndex = edges[(size_t)neighborEdgeIndex].neighbors_vertice[k];
                             if (vertices[(size_t)neighborVertexIndex].getOwner() == player.getName()) // if the adjacent edge has an adjacent settlement owned by the player
                             {
-                                // Place the road at the edge
-                                currentEdge.owner = player.getName();
+                                // Place the Road at the edge
+                                currentEdge.getOwner() = player.getName();
                                 player.addRoadsNum(1);
                                  player.removeResource(WOOD, 1);
                                  player.removeResource(BRICK, 1);
@@ -246,76 +267,194 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
 
     string Board::printVertex(Vertex vertex)
      {
-    return vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")";
-     }
+        if (vertex.getOwner() == "none")
+        {   if(vertex.getNumber()<10)
+            {
+                return "(" +to_string(vertex.getNumber())+ ")" + "     ";
+            }else{
+                return "(" +to_string(vertex.getNumber())+ ")" + "    ";
+            }
+    
+        }else{
+            if(vertex.getNumber()<10)
+            {
+                return vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")" + "     " ;
+            }else{
+                return vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")" + "    " ;
 
-    string printTile( Tile& tile) {
-    return tile.getType() + "[" + to_string(tile.getNumber()) + "]";
+            }
+        }
+     }  
+//print tile will  print the type of the tile and the number on it
+    string printTile(Tile& tile) 
+    {
+        if (tile.getNumber()<10)
+        {
+            return tile.getResourceType(tile.getType()) + ", " + to_string(tile.getNumber());
+        }else{
+            return tile.getResourceType(tile.getType()) + "," + to_string(tile.getNumber()) ;
+        }
     }
+
+
 
     string printRoad(Edge edge, string direction) 
     {
-        return edge.owner + direction;
+        if (edge.getOwner() == "none")
+        {
+            return direction;
+        }else{
+            return edge.getOwner() + direction;
+        }
     }
 
+     void Board::printBoard(){
+        cout << "            " << printVertex(vertices[1]) << printVertex(vertices[3]) << printVertex(vertices[5]) << endl;
+        cout << "           "<<printRoad(0,"/   ")<<printRoad(1,"\\   ")<<printRoad(2, "/   ")<<printRoad(3,"\\   ")<<printRoad(4,"/   ")<<printRoad(5,"\\   ") << endl;
+        cout << "        " << printVertex(vertices[0]) << printVertex(vertices[2]) << printVertex(vertices[4]) << printVertex(vertices[6]) << endl;
+        cout << "         "<<printRoad(6,"|")<<printTile(tiles[0][0])<<printRoad(7,"|")<<printTile(tiles[0][1])<<printRoad(8,"|")<<printTile(tiles[0][2])<<printRoad(9,"|") << endl;
+        cout << "        " << printVertex(vertices[8]) << printVertex(vertices[10]) << printVertex(vertices[12]) << printVertex(vertices[14] )<< endl;
+        cout << "       "<<printRoad(10,"/    ")<<printRoad(11,"\\  ")<<printRoad(12,"/    ")<<printRoad(13,"\\  ")<<printRoad(14,"/    ")<<printRoad(15,"\\  ")<<printRoad(16,"/    ")<<printRoad(17,"\\  ") << endl;
+        cout << "    " << printVertex(vertices[7]) << printVertex(vertices[9]) << printVertex(vertices[11]) << printVertex(vertices[13]) << printVertex(vertices[15]) << endl;
+        cout << "     "<<printRoad(18,"|")<<printTile(tiles[1][0])<<printRoad(19,"|")<<printTile(tiles[1][1])<<printRoad(20,"|")<<printTile(tiles[1][2])<<printRoad(21,"|")<<printTile(tiles[1][3])<<printRoad(22,"|") << endl;
+        cout << "    " << printVertex(vertices[17]) << printVertex(vertices[19])<< printVertex(vertices[21]) << printVertex(vertices[23]) << printVertex(vertices[25]) << endl;
+        cout << "   "<<printRoad(23,"/    ")<<printRoad(24,"\\  ")<<printRoad(25,"/    ")<<printRoad(26,"\\  ")<<printRoad(27,"/    ")<<printRoad(28,"\\  ")<<printRoad(29,"/    ")<<printRoad(30,"\\  ")<<printRoad(31,"/    ")<<printRoad(32,"\\  ") << endl;
+        cout << printVertex(vertices[16]) << printVertex(vertices[18]) << printVertex(vertices[20]) << printVertex(vertices[22]) << printVertex(vertices[24]) << printVertex(vertices[26]) << endl;
+        cout << " "<<printRoad(33,"|")<<printTile(tiles[2][0])<<printRoad(34,"|")<<printTile(tiles[2][1])<<printRoad(35,"|")<<printTile(tiles[2][2])<<printRoad(36,"|")<<printTile(tiles[2][3])<<printRoad(37,"|")<<printTile(tiles[2][4])<<printRoad(38,"|") << endl;
+        cout << printVertex(vertices[27]) << printVertex(vertices[29]) << printVertex(vertices[31]) << printVertex(vertices[33]) << printVertex(vertices[35]) << printVertex(vertices[37]) << endl;
+        cout << "   "<<printRoad(39,"\\    ")<<printRoad(40,"/  ")<<printRoad(41,"\\    ")<<printRoad(42,"/  ")<<printRoad(43,"\\    ")<<printRoad(44,"/  ")<<printRoad(45,"\\    ")<<printRoad(46,"/  ")<<printRoad(47,"\\    ")<<printRoad(48,"/  ") << endl;
+        cout << "    " << printVertex(vertices[28]) << printVertex(vertices[30]) << printVertex(vertices[32]) << printVertex(vertices[34]) << printVertex(vertices[36]) << endl;
+        cout << "     "<<printRoad(49,"|")<<printTile(tiles[3][0])<<printRoad(50,"|")<<printTile(tiles[3][1])<<printRoad(51,"|")<<printTile(tiles[3][2])<<printRoad(52,"|")<<printTile(tiles[3][3])<<printRoad(53,"|") << endl;
+        cout << "    " << printVertex(vertices[38]) << printVertex(vertices[40]) << printVertex(vertices[42]) << printVertex(vertices[44]) << printVertex(vertices[46]) << endl;
+        cout << "       "<<printRoad(54,"\\    ")<<printRoad(55,"/  ")<<printRoad(56,"\\    ")<<printRoad(57,"/  ")<<printRoad(58,"\\    ")<<printRoad(59,"/  ")<<printRoad(60,"\\    ")<<printRoad(61,"/  ") << endl;
+        cout << "        " << printVertex(vertices[39]) << printVertex(vertices[41]) << printVertex(vertices[43]) << printVertex(vertices[45]) << endl;
+        cout << "         "<<printRoad(62,"|")<<printTile(tiles[4][0])<<printRoad(63,"|")<<printTile(tiles[4][1])<<printRoad(64,"|")<<printTile(tiles[4][2])<<printRoad(65,"|") << endl;
+        cout << "        " << printVertex(vertices[47]) << printVertex(vertices[49]) << printVertex(vertices[51]) << printVertex(vertices[53]) << endl;
+        cout << "           "<<printRoad(66,"\\    ")<<printRoad(67,"/  ")<<printRoad(68,"\\    ")<<printRoad(69,"/  ")<<printRoad(70,"\\    ")<<printRoad(71,"/  ") << endl;
+        cout << "            " << printVertex(vertices[48])<< printVertex(vertices[50]) << printVertex(vertices[52]) << "\n\n-----------------------------------\n\n";
+    }
 
+//     void Board::printBoard() {
+//     cout << "                      " << printVertex(vertices[1]) << "       " << printVertex(vertices[3]) << "       " << printVertex(vertices[5]) << "\n";
+//     cout << "                     / \\       / \\       / \\\n";
+//     cout << "            " << printVertex(vertices[0]) << printprintRoad(edges[0], "/") << "   " << printprintRoad(edges[1], "\\") << printVertex(vertices[2]) << printprintRoad(edges[2], "/") << "   " << printprintRoad(edges[3], "\\") << printVertex(vertices[4]) << printprintRoad(edges[4], "/") << "   " << printprintRoad(edges[5], "\\") << printVertex(vertices[6]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[7]) << printprintRoad(edges[6], "/") << " " << printTile(tiles[0][0]) << " " << printprintRoad(edges[7], "\\") << printVertex(vertices[9]) << printprintRoad(edges[8], "/") << " " << printTile(tiles[0][1]) << " " << printprintRoad(edges[9], "\\") << printVertex(vertices[11]) << printprintRoad(edges[10], "/") << " " << printTile(tiles[0][2]) << " " << printprintRoad(edges[11], "\\") << printVertex(vertices[13]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[8]) << printprintRoad(edges[12], "/") << "   " << printprintRoad(edges[13], "\\") << printVertex(vertices[10]) << printprintRoad(edges[14], "/") << "   " << printprintRoad(edges[15], "\\") << printVertex(vertices[12]) << printprintRoad(edges[16], "/") << "   " << printprintRoad(edges[17], "\\") << printVertex(vertices[14]) << printprintRoad(edges[18], "/") << "   " << printprintRoad(edges[19], "\\") << printVertex(vertices[16]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[17]) << printprintRoad(edges[20], "/") << " " << printTile(tiles[1][0]) << " " << printprintRoad(edges[21], "\\") << printVertex(vertices[19]) << printprintRoad(edges[22], "/") << " " << printTile(tiles[1][1]) << " " << printprintRoad(edges[23], "\\") << printVertex(vertices[21]) << printprintRoad(edges[24], "/") << " " << printTile(tiles[1][2]) << " " << printprintRoad(edges[25], "\\") << printVertex(vertices[23]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[18]) << printprintRoad(edges[26], "/") << "   " << printprintRoad(edges[27], "\\") << printVertex(vertices[20]) << printprintRoad(edges[28], "/") << "   " << printprintRoad(edges[29], "\\") << printVertex(vertices[22]) << printprintRoad(edges[30], "/") << "   " << printprintRoad(edges[31], "\\") << printVertex(vertices[24]) << printprintRoad(edges[32], "/") << "   " << printprintRoad(edges[33], "\\") << printVertex(vertices[26]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[27]) << printprintRoad(edges[34], "/") << " " << printTile(tiles[2][0]) << " " << printprintRoad(edges[35], "\\") << printVertex(vertices[29]) << printprintRoad(edges[36], "/") << " " << printTile(tiles[2][1]) << " " << printprintRoad(edges[37], "\\") << printVertex(vertices[31]) << printprintRoad(edges[38], "/") << " " << printTile(tiles[2][2]) << " " << printprintRoad(edges[39], "\\") << printVertex(vertices[33]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[28]) << printprintRoad(edges[40], "/") << "   " << printprintRoad(edges[41], "\\") << printVertex(vertices[30]) << printprintRoad(edges[42], "/") << "   " << printprintRoad(edges[43], "\\") << printVertex(vertices[32]) << printprintRoad(edges[44], "/") << "   " << printprintRoad(edges[45], "\\") << printVertex(vertices[34]) << printprintRoad(edges[46], "/") << "   " << printprintRoad(edges[47], "\\") << printVertex(vertices[36]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[37]) << printprintRoad(edges[48], "/") << " " << printTile(tiles[3][0]) << " " << printprintRoad(edges[49], "\\") << printVertex(vertices[39]) << printprintRoad(edges[50], "/") << " " << printTile(tiles[3][1]) << " " << printprintRoad(edges[51], "\\") << printVertex(vertices[41]) << printprintRoad(edges[52], "/") << " " << printTile(tiles[3][2]) << " " << printprintRoad(edges[53], "\\") << printVertex(vertices[43]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[38]) << printprintRoad(edges[54], "/") << "   " << printprintRoad(edges[55], "\\") << printVertex(vertices[40]) << printprintRoad(edges[56], "/") << "   " << printprintRoad(edges[57], "\\") << printVertex(vertices[42]) << printprintRoad(edges[58], "/") << "   " << printprintRoad(edges[59], "\\") << printVertex(vertices[44]) << printprintRoad(edges[60], "/") << "   " << printprintRoad(edges[61], "\\") << printVertex(vertices[46]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[45]) << printprintRoad(edges[62], "/") << " " << printTile(tiles[4][0]) << " " << printprintRoad(edges[63], "\\") << printVertex(vertices[47]) << printprintRoad(edges[64], "/") << " " << printTile(tiles[4][1]) << " " << printprintRoad(edges[65], "\\") << printVertex(vertices[49]) << printprintRoad(edges[66], "/") << " " << printTile(tiles[4][2]) << " " << printprintRoad(edges[67], "\\") << printVertex(vertices[51]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[48]) << printprintRoad(edges[68], "/") << "   " << printprintRoad(edges[69], "\\") << printVertex(vertices[50]) << printprintRoad(edges[70], "/") << "   " << printprintRoad(edges[71], "\\") << printVertex(vertices[52]) << printprintRoad(edges[72], "/") << "   " << printprintRoad(edges[73], "\\") << printVertex(vertices[54]) << "\n";
+// }
+
+
+//     void Board::printBoard() {
+//     cout << "                      " << printVertex(vertices[1]) << "       " << printVertex(vertices[3]) << "       " << printVertex(vertices[5]) << "\n";
+//     cout << "                     / \\       / \\       / \\\n";
+//     cout << "            " << printVertex(vertices[0]) << printprintRoad(edges[0], "/") << "   " << printprintRoad(edges[1], "\\") << printVertex(vertices[2]) << printprintRoad(edges[2], "/") << "   " << printprintRoad(edges[3], "\\") << printVertex(vertices[4]) << printprintRoad(edges[4], "/") << "   " << printprintRoad(edges[5], "\\") << printVertex(vertices[6]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[7]) << printprintRoad(edges[6], "/") << " " << printTile(tiles[0][0]) << " " << printprintRoad(edges[7], "\\") << printVertex(vertices[9]) << printprintRoad(edges[8], "/") << " " << printTile(tiles[0][1]) << " " << printprintRoad(edges[9], "\\") << printVertex(vertices[11]) << printprintRoad(edges[10], "/") << " " << printTile([0][2]) << " " << printprintRoad(edges[11], "\\") << printVertex(vertices[13]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[8]) << printprintRoad(edges[12], "/") << "   " << printprintRoad(edges[13], "\\") << printVertex(vertices[10]) << printprintRoad(edges[14], "/") << "   " << printprintRoad(edges[15], "\\") << printVertex(vertices[12]) << printprintRoad(edges[16], "/") << "   " << printprintRoad(edges[17], "\\") << printVertex(vertices[14]) << printprintRoad(edges[18], "/") << "   " << printprintRoad(edges[19], "\\") << printVertex(vertices[16]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[17]) << printprintRoad(edges[20], "/") << " " << printTile(tiles[3]) << " " << printprintRoad(edges[21], "\\") << printVertex(vertices[19]) << printprintRoad(edges[22], "/") << " " << printTile(tiles[4]) << " " << printprintRoad(edges[23], "\\") << printVertex(vertices[21]) << printprintRoad(edges[24], "/") << " " << printTile(tiles[5]) << " " << printprintRoad(edges[25], "\\") << printVertex(vertices[23]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[18]) << printprintRoad(edges[26], "/") << "   " << printprintRoad(edges[27], "\\") << printVertex(vertices[20]) << printprintRoad(edges[28], "/") << "   " << printprintRoad(edges[29], "\\") << printVertex(vertices[22]) << printprintRoad(edges[30], "/") << "   " << printprintRoad(edges[31], "\\") << printVertex(vertices[24]) << printprintRoad(edges[32], "/") << "   " << printprintRoad(edges[33], "\\") << printVertex(vertices[26]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[27]) << printprintRoad(edges[34], "/") << " " << printTile(tiles[6]) << " " << printprintRoad(edges[35], "\\") << printVertex(vertices[29]) << printprintRoad(edges[36], "/") << " " << printTile(tiles[7]) << " " << printprintRoad(edges[37], "\\") << printVertex(vertices[31]) << printprintRoad(edges[38], "/") << " " << printTile(tiles[8]) << " " << printprintRoad(edges[39], "\\") << printVertex(vertices[33]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[28]) << printprintRoad(edges[40], "/") << "   " << printprintRoad(edges[41], "\\") << printVertex(vertices[30]) << printprintRoad(edges[42], "/") << "   " << printprintRoad(edges[43], "\\") << printVertex(vertices[32]) << printprintRoad(edges[44], "/") << "   " << printprintRoad(edges[45], "\\") << printVertex(vertices[34]) << printprintRoad(edges[46], "/") << "   " << printprintRoad(edges[47], "\\") << printVertex(vertices[36]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[37]) << printprintRoad(edges[48], "/") << " " << printTile(tiles[9]) << " " << printprintRoad(edges[49], "\\") << printVertex(vertices[39]) << printprintRoad(edges[50], "/") << " " << printTile(tiles[10]) << " " << printprintRoad(edges[51], "\\") << printVertex(vertices[41]) << printprintRoad(edges[52], "/") << " " << printTile(tiles[11]) << " " << printprintRoad(edges[53], "\\") << printVertex(vertices[43]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[38]) << printprintRoad(edges[54], "/") << "   " << printprintRoad(edges[55], "\\") << printVertex(vertices[40]) << printprintRoad(edges[56], "/") << "   " << printprintRoad(edges[57], "\\") << printVertex(vertices[42]) << printprintRoad(edges[58], "/") << "   " << printprintRoad(edges[59], "\\") << printVertex(vertices[44]) << printprintRoad(edges[60], "/") << "   " << printprintRoad(edges[61], "\\") << printVertex(vertices[46]) << "\n";
+//     cout << "           /       \\ /       \\ /       \\ /       \\ /       \\ /       \\\n";
+//     cout << "          /         \\         /         \\         /         \\         /\n";
+//     cout << " " << printVertex(vertices[45]) << printprintRoad(edges[62], "/") << " " << printTile(tiles[12]) << " " << printprintRoad(edges[63], "\\") << printVertex(vertices[47]) << printprintRoad(edges[64], "/") << " " << printTile(tiles[13]) << " " << printprintRoad(edges[65], "\\") << printVertex(vertices[49]) << printprintRoad(edges[66], "/") << " " << printTile(tiles[14]) << " " << printprintRoad(edges[67], "\\") << printVertex(vertices[51]) << "\n";
+//     cout << "           \\         /         \\         /         \\         /         \\\n";
+//     cout << "            \\       / \\       / \\       / \\       / \\       / \\       /\n";
+//     cout << "            " << printVertex(vertices[48]) << printprintRoad(edges[68], "/") << "   " << printprintRoad(edges[69], "\\") << printVertex(vertices[50]) << printprintRoad(edges[70], "/") << "   " << printprintRoad(edges[71], "\\") << printVertex(vertices[52]) << printprintRoad(edges[72], "/") << "   " << printprintRoad(edges[73], "\\") << printVertex(vertices[54]) << "\n";
+// }
+
+
+// void Board::printBoard(){
+//     cout << "                         " << printVertex(vertices[0]) << "         " << printVertex(vertices[1]) << "         " << printVertex(vertices[2]) << endl;
+//     cout << "                        / \\       / \\       / \\       / \\" << endl;
+//     cout << "          " << printVertex(vertices[3]) << " " << printprintRoad(edges[0], "/") << "   " << printprintRoad(edges[1], "\\") << " " << printVertex(vertices[4]) << " " << printprintRoad(edges[2], "/") << "   " << printprintRoad(edges[3], "\\") << " " << printVertex(vertices[5]) << " " << printprintRoad(edges[4], "/") << "   " << printprintRoad(edges[5], "\\") << " " << printVertex(vertices[6]) << endl;
+//     cout << "          " << printTile(tiles[0][0]) << "       " << printTile(tiles[0][1]) << "       " << printTile(tiles[0][2]) << endl;
+//     cout << "          " << printprintRoad(edges[6], "/") << "   " << printprintRoad(edges[7], "\\") << " " << printVertex(vertices[7]) << " " << printprintRoad(edges[8], "/") << "   " << printprintRoad(edges[9], "\\") << " " << printVertex(vertices[8]) << " " << printprintRoad(edges[10], "/") << "   " << printprintRoad(edges[11], "\\") << " " << printVertex(vertices[9]) << endl;
+//     cout << "         / \\       / \\       / \\       / \\" << endl;
+//     cout << " " << printVertex(vertices[10]) << " " << printprintRoad(edges[12], "/") << "   " << printprintRoad(edges[13], "\\") << " " << printVertex(vertices[11]) << " " << printprintRoad(edges[14], "/") << "   " << printprintRoad(edges[15], "\\") << " " << printVertex(vertices[12]) << " " << printprintRoad(edges[16], "/") << "   " << printprintRoad(edges[17], "\\") << " " << printVertex(vertices[13]) << " " << printprintRoad(edges[18], "/") << "   " << printprintRoad(edges[19], "\\") << " " << printVertex(vertices[14]) << endl;
+//     cout << " " << printTile(tiles[1][0]) << "       " << printTile(tiles[1][1]) << "       " << printTile(tiles[1][2]) << "       " << printTile(tiles[1][3]) << endl;
+//     cout << " " << printprintRoad(edges[20], "/") << "   " << printprintRoad(edges[21], "\\") << " " << printVertex(vertices[15]) << " " << printprintRoad(edges[22], "/") << "   " << printprintRoad(edges[23], "\\") << " " << printVertex(vertices[16]) << " " << printprintRoad(edges[24], "/") << "   " << printprintRoad(edges[25], "\\") << " " << printVertex(vertices[17]) << " " << printprintRoad(edges[26], "/") << "   " << printprintRoad(edges[27], "\\") << " " << printVertex(vertices[18]) << " " << printprintRoad(edges[28], "/") << "   " << printprintRoad(edges[29], "\\") << " " << printVertex(vertices[19]) << " " << printprintRoad(edges[30], "/") << "   " << printprintRoad(edges[31], "\\") << " " << printVertex(vertices[20]) << endl;
+//     cout << "        / \\       / \\       / \\       / \\       / \\" << endl;
+//     cout << " " << printVertex(vertices[21]) << " " << printprintRoad(edges[32], "/") << "   " << printprintRoad(edges[33], "\\") << " " << printVertex(vertices[22]) << " " << printprintRoad(edges[34], "/") << "   " << printprintRoad(edges[35], "\\") << " " << printVertex(vertices[23]) << " " << printprintRoad(edges[36], "/") << "   " << printprintRoad(edges[37], "\\") << " " << printVertex(vertices[24]) << " " << printprintRoad(edges[38], "/") << "   " << printprintRoad(edges[39], "\\") << " " << printVertex(vertices[25]) << " " << printprintRoad(edges[40], "/") << "   " << printprintRoad(edges[41], "\\") << " " << printVertex(vertices[26]) << endl;
+//     cout << " " << printTile(tiles[2][0]) << "       " << printTile(tiles[2][1]) << "       " << printTile(tiles[2][2]) << "       " << printTile(tiles[2][3]) << "       " << printTile(tiles[2][4]) << endl;
+//     cout << " " << printprintRoad(edges[42], "/") << "   " << printprintRoad(edges[43], "\\") << " " << printVertex(vertices[27]) << " " << printprintRoad(edges[44], "/") << "   " << printprintRoad(edges[45], "\\") << " " << printVertex(vertices[28]) << " " << printprintRoad(edges[46], "/") << "   " << printprintRoad(edges[47], "\\") << " " << printVertex(vertices[29]) << " " << printprintRoad(edges[48], "/") << "   " << printprintRoad(edges[49], "\\") << " " << printVertex(vertices[30]) << " " << printprintRoad(edges[50], "/") << "   " << printprintRoad(edges[51], "\\") << " " << printVertex(vertices[31]) << endl;
+//     cout << "        / \\       / \\       / \\       / \\       / \\" << endl;
+//     cout << " " << printVertex(vertices[32]) << " " << printprintRoad(edges[52], "/") << "   " << printprintRoad(edges[53], "\\") << " " << printVertex(vertices[33]) << " " << printprintRoad(edges[54], "/") << "   " << printprintRoad(edges[55], "\\") << " " << printVertex(vertices[34]) << " " << printprintRoad(edges[56], "/") << "   " << printprintRoad(edges[57], "\\") << " " << printVertex(vertices[35]) << " " << printprintRoad(edges[58], "/") << "   " << printprintRoad(edges[59], "\\") << " " << printVertex(vertices[36]) << endl;
+//     cout << " " << printTile(tiles[3][0]) << "       " << printTile(tiles[3][1]) << "       " << printTile(tiles[3][2]) << "       " << printTile(tiles[3][3]) << endl;
+//     cout << " " << printprintRoad(edges[60], "/") << "   " << printprintRoad(edges[61], "\\") << " " << printVertex(vertices[37]) << " " << printprintRoad(edges[62], "/") << "   " << printprintRoad(edges[63], "\\") << " " << printVertex(vertices[38]) << " " << printprintRoad(edges[64], "/") << "   " << printprintRoad(edges[65], "\\") << " " << printVertex(vertices[39]) << " " << printprintRoad(edges[66], "/") << "   " << printprintRoad(edges[67], "\\") << " " << printVertex(vertices[40]) << " " << printprintRoad(edges[68], "/") << "   " << printprintRoad(edges[69], "\\") << " " << printVertex(vertices[41]) << endl;
+//     cout << "       / \\       / \\       / \\       / \\" << endl;
+//     cout << "      " << printVertex(vertices[42]) << "         " << printVertex(vertices[43]) << "         " << printVertex(vertices[44]) << "         " << printVertex(vertices[45]) << endl;
+
+
+// }
 
 //     void Board::printBoard()  {
 //     std::cout << "                         " << printVertex(vertices[0]) << "         " << printVertex(vertices[1]) << "         " << printVertex(vertices[2]) << std::endl;
 //     std::cout << "                        / \\       / \\       / \\       / \\" << std::endl;
-//     std::cout << "          " << printVertex(vertices[3]) << " " << printRoad(edges[0], "/") << "   " << printRoad(edges[1], "\\") << " " << printVertex(vertices[4]) << " " << printRoad(edges[2], "/") << "   " << printRoad(edges[3], "\\") << " " << printVertex(vertices[5]) << " " << printRoad(edges[4], "/") << "   " << printRoad(edges[5], "\\") << " " << printVertex(vertices[6]) << std::endl;
+//     std::cout << "          " << printVertex(vertices[3]) << " " << printprintRoad(edges[0], "/") << "   " << printprintRoad(edges[1], "\\") << " " << printVertex(vertices[4]) << " " << printprintRoad(edges[2], "/") << "   " << printprintRoad(edges[3], "\\") << " " << printVertex(vertices[5]) << " " << printprintRoad(edges[4], "/") << "   " << printprintRoad(edges[5], "\\") << " " << printVertex(vertices[6]) << std::endl;
 //     std::cout << "          " << printTile(tiles[0][0]) << "       " << printTile(tiles[0][1]) << "       " << printTile(tiles[0][2]) << std::endl;
-//     std::cout << "          " << printRoad(edges[6], "/") << "   " << printRoad(edges[7], "\\") << " " << printVertex(vertices[7]) << " " << printRoad(edges[8], "/") << "   " << printRoad(edges[9], "\\") << " " << printVertex(vertices[8]) << " " << printRoad(edges[10], "/") << "   " << printRoad(edges[11], "\\") << " " << printVertex(vertices[9]) << std::endl;
+//     std::cout << "          " << printprintRoad(edges[6], "/") << "   " << printprintRoad(edges[7], "\\") << " " << printVertex(vertices[7]) << " " << printprintRoad(edges[8], "/") << "   " << printprintRoad(edges[9], "\\") << " " << printVertex(vertices[8]) << " " << printprintRoad(edges[10], "/") << "   " << printprintRoad(edges[11], "\\") << " " << printVertex(vertices[9]) << std::endl;
 //     std::cout << "         / \\       / \\       / \\       / \\" << std::endl;
-//     std::cout << " " << printVertex(vertices[10]) << " " << printRoad(edges[12], "/") << "   " << printRoad(edges[13], "\\") << " " << printVertex(vertices[11]) << " " << printRoad(edges[14], "/") << "   " << printRoad(edges[15], "\\") << " " << printVertex(vertices[12]) << " " << printRoad(edges[16], "/") << "   " << printRoad(edges[17], "\\") << " " << printVertex(vertices[13]) << " " << printRoad(edges[18], "/") << "   " << printRoad(edges[19], "\\") << " " << printVertex(vertices[14]) << std::endl;
+//     std::cout << " " << printVertex(vertices[10]) << " " << printprintRoad(edges[12], "/") << "   " << printprintRoad(edges[13], "\\") << " " << printVertex(vertices[11]) << " " << printprintRoad(edges[14], "/") << "   " << printprintRoad(edges[15], "\\") << " " << printVertex(vertices[12]) << " " << printprintRoad(edges[16], "/") << "   " << printprintRoad(edges[17], "\\") << " " << printVertex(vertices[13]) << " " << printprintRoad(edges[18], "/") << "   " << printprintRoad(edges[19], "\\") << " " << printVertex(vertices[14]) << std::endl;
 //     std::cout << " " << printTile(tiles[1][0]) << "       " << printTile(tiles[1][1]) << "       " << printTile(tiles[1][2]) << "       " << printTile(tiles[1][3]) << std::endl;
-//     std::cout << " " << printRoad(edges[20], "/") << "   " << printRoad(edges[21], "\\") << " " << printVertex(vertices[15]) << " " << printRoad(edges[22], "/") << "   " << printRoad(edges[23], "\\") << " " << printVertex(vertices[16]) << " " << printRoad(edges[24], "/") << "   " << printRoad(edges[25], "\\") << " " << printVertex(vertices[17]) << " " << printRoad(edges[26], "/") << "   " << printRoad(edges[27], "\\") << " " << printVertex(vertices[18]) << " " << printRoad(edges[28], "/") << "   " << printRoad(edges[29], "\\") << " " << printVertex(vertices[19]) << " " << printRoad(edges[30], "/") << "   " << printRoad(edges[31], "\\") << " " << printVertex(vertices[20]) << std::endl;
+//     std::cout << " " << printprintRoad(edges[20], "/") << "   " << printprintRoad(edges[21], "\\") << " " << printVertex(vertices[15]) << " " << printprintRoad(edges[22], "/") << "   " << printprintRoad(edges[23], "\\") << " " << printVertex(vertices[16]) << " " << printprintRoad(edges[24], "/") << "   " << printprintRoad(edges[25], "\\") << " " << printVertex(vertices[17]) << " " << printprintRoad(edges[26], "/") << "   " << printprintRoad(edges[27], "\\") << " " << printVertex(vertices[18]) << " " << printprintRoad(edges[28], "/") << "   " << printprintRoad(edges[29], "\\") << " " << printVertex(vertices[19]) << " " << printprintRoad(edges[30], "/") << "   " << printprintRoad(edges[31], "\\") << " " << printVertex(vertices[20]) << std::endl;
 //     std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
-//     std::cout << " " << printVertex(vertices[21]) << " " << printRoad(edges[32], "/") << "   " << printRoad(edges[33], "\\") << " " << printVertex(vertices[22]) << " " << printRoad(edges[34], "/") << "   " << printRoad(edges[35], "\\") << " " << printVertex(vertices[23]) << " " << printRoad(edges[36], "/") << "   " << printRoad(edges[37], "\\") << " " << printVertex(vertices[24]) << " " << printRoad(edges[38], "/") << "   " << printRoad(edges[39], "\\") << " " << printVertex(vertices[25]) << " " << printRoad(edges[40], "/") << "   " << printRoad(edges[41], "\\") << " " << printVertex(vertices[26]) << std::endl;
+//     std::cout << " " << printVertex(vertices[21]) << " " << printprintRoad(edges[32], "/") << "   " << printprintRoad(edges[33], "\\") << " " << printVertex(vertices[22]) << " " << printprintRoad(edges[34], "/") << "   " << printprintRoad(edges[35], "\\") << " " << printVertex(vertices[23]) << " " << printprintRoad(edges[36], "/") << "   " << printprintRoad(edges[37], "\\") << " " << printVertex(vertices[24]) << " " << printprintRoad(edges[38], "/") << "   " << printprintRoad(edges[39], "\\") << " " << printVertex(vertices[25]) << " " << printprintRoad(edges[40], "/") << "   " << printprintRoad(edges[41], "\\") << " " << printVertex(vertices[26]) << std::endl;
 //     std::cout << " " << printTile(tiles[2][0]) << "       " << printTile(tiles[2][1]) << "       " << printTile(tiles[2][2]) << "       " << printTile(tiles[2][3]) << "       " << printTile(tiles[2][4]) << std::endl;
-//     std::cout << " " << printRoad(edges[42], "/") << "   " << printRoad(edges[43], "\\") << " " << printVertex(vertices[27]) << " " << printRoad(edges[44], "/") << "   " << printRoad(edges[45], "\\") << " " << printVertex(vertices[28]) << " " << printRoad(edges[46], "/") << "   " << printRoad(edges[47], "\\") << " " << printVertex(vertices[29]) << " " << printRoad(edges[48], "/") << "   " << printRoad(edges[49], "\\") << " " << printVertex(vertices[30]) << " " << printRoad(edges[50], "/") << "   " << printRoad(edges[51], "\\") << " " << printVertex(vertices[31]) << std::endl;
+//     std::cout << " " << printprintRoad(edges[42], "/") << "   " << printprintRoad(edges[43], "\\") << " " << printVertex(vertices[27]) << " " << printprintRoad(edges[44], "/") << "   " << printprintRoad(edges[45], "\\") << " " << printVertex(vertices[28]) << " " << printprintRoad(edges[46], "/") << "   " << printprintRoad(edges[47], "\\") << " " << printVertex(vertices[29]) << " " << printprintRoad(edges[48], "/") << "   " << printprintRoad(edges[49], "\\") << " " << printVertex(vertices[30]) << " " << printprintRoad(edges[50], "/") << "   " << printprintRoad(edges[51], "\\") << " " << printVertex(vertices[31]) << std::endl;
 //     std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
-//     std::cout << " " << printVertex(vertices[32]) << " " << printRoad(edges[52], "/") << "   " << printRoad(edges[53], "\\") << " " << printVertex(vertices[33]) << " " << printRoad(edges[54], "/") << "   " << printRoad(edges[55], "\\") << " " << printVertex(vertices[34]) << " " << printRoad(edges[56], "/") << "   " << printRoad(edges[57], "\\") << " " << printVertex(vertices[35]) << " " << printRoad(edges[58], "/") << "   " << printRoad(edges[59], "\\") << " " << printVertex(vertices[36]) << std::endl;
+//     std::cout << " " << printVertex(vertices[32]) << " " << printprintRoad(edges[52], "/") << "   " << printprintRoad(edges[53], "\\") << " " << printVertex(vertices[33]) << " " << printprintRoad(edges[54], "/") << "   " << printprintRoad(edges[55], "\\") << " " << printVertex(vertices[34]) << " " << printprintRoad(edges[56], "/") << "   " << printprintRoad(edges[57], "\\") << " " << printVertex(vertices[35]) << " " << printprintRoad(edges[58], "/") << "   " << printprintRoad(edges[59], "\\") << " " << printVertex(vertices[36]) << std::endl;
 //     std::cout << " " << printTile(tiles[3][0]) << "       " << printTile(tiles[3][1]) << "       " << printTile(tiles[3][2]) << "       " << printTile(tiles[3][3]) << std::endl;
-//     std::cout << " " << printRoad(edges[60], "/") << "   " << printRoad(edges[61], "\\") << " " << printVertex(vertices[37]) << " " << printRoad(edges[62], "/") << "   " << printRoad(edges[63], "\\") << " " << printVertex(vertices[38]) << " " << printRoad(edges[64], "/") << "   " << printRoad(edges[65], "\\") << " " << printVertex(vertices[39]) << " " << printRoad(edges[66], "/") << "   " << printRoad(edges[67], "\\") << " " << printVertex(vertices[40]) << " " << printRoad(edges[68], "/") << "   " << printRoad(edges[69], "\\") << " " << printVertex(vertices[41]) << std::endl;
+//     std::cout << " " << printprintRoad(edges[60], "/") << "   " << printprintRoad(edges[61], "\\") << " " << printVertex(vertices[37]) << " " << printprintRoad(edges[62], "/") << "   " << printprintRoad(edges[63], "\\") << " " << printVertex(vertices[38]) << " " << printprintRoad(edges[64], "/") << "   " << printprintRoad(edges[65], "\\") << " " << printVertex(vertices[39]) << " " << printprintRoad(edges[66], "/") << "   " << printprintRoad(edges[67], "\\") << " " << printVertex(vertices[40]) << " " << printprintRoad(edges[68], "/") << "   " << printprintRoad(edges[69], "\\") << " " << printVertex(vertices[41]) << std::endl;
 //     std::cout << "       / \\       / \\       / \\       / \\" << std::endl;
 //     std::cout << "      " << printVertex(vertices[42]) << "         " << printVertex(vertices[43]) << "         " << printVertex(vertices[44]) << "         " << printVertex(vertices[45]) << std::endl;
 // }
 
-void Board::printBoard()  {
-    try {
-        // Layer 1
-        std::cout << "                         " << printVertex(vertices.at(0)) << "         " << printVertex(vertices.at(1)) << "         " << printVertex(vertices.at(2)) << std::endl;
-        std::cout << "                        / \\       / \\       / \\       / \\" << std::endl;
-        std::cout << "          " << printVertex(vertices.at(3)) << " " << printRoad(edges.at(0), "/   ") << printRoad(edges.at(1), "\\") << " " << printVertex(vertices.at(4)) << " " << printRoad(edges.at(2), "/   ") << printRoad(edges.at(3), "\\") << " " << printVertex(vertices.at(5)) << " " << printRoad(edges.at(4), "/   ") << printRoad(edges.at(5), "\\") << " " << printVertex(vertices.at(6)) << std::endl;
-        std::cout << "          " << printTile(tiles.at(0).at(0)) << "       " << printTile(tiles.at(0).at(1)) << "       " << printTile(tiles.at(0).at(2)) << std::endl;
-        
-        // Layer 2
-        std::cout << "          " << printRoad(edges.at(6), "/   ") << printRoad(edges.at(7), "\\") << " " << printVertex(vertices.at(7)) << " " << printRoad(edges.at(8), "/   ") << printRoad(edges.at(9), "\\") << " " << printVertex(vertices.at(8)) << " " << printRoad(edges.at(10), "/   ") << printRoad(edges.at(11), "\\") << " " << printVertex(vertices.at(9)) << std::endl;
-        std::cout << "         / \\       / \\       / \\       / \\" << std::endl;
-        std::cout << " " << printVertex(vertices.at(10)) << " " << printRoad(edges.at(12), "/   ") << printRoad(edges.at(13), "\\") << " " << printVertex(vertices.at(11)) << " " << printRoad(edges.at(14), "/   ") << printRoad(edges.at(15), "\\") << " " << printVertex(vertices.at(12)) << " " << printRoad(edges.at(16), "/   ") << printRoad(edges.at(17), "\\") << " " << printVertex(vertices.at(13)) << " " << printRoad(edges.at(18), "/   ") << printRoad(edges.at(19), "\\") << " " << printVertex(vertices.at(14)) << std::endl;
-        std::cout << " " << printTile(tiles.at(1).at(0)) << "       " << printTile(tiles.at(1).at(1)) << "       " << printTile(tiles.at(1).at(2)) << "       " << printTile(tiles.at(1).at(3)) << std::endl;
-        
-        // Layer 3
-        std::cout << " " << printRoad(edges.at(20), "/   ") << printRoad(edges.at(21), "\\") << " " << printVertex(vertices.at(15)) << " " << printRoad(edges.at(22), "/   ") << printRoad(edges.at(23), "\\") << " " << printVertex(vertices.at(16)) << " " << printRoad(edges.at(24), "/   ") << printRoad(edges.at(25), "\\") << " " << printVertex(vertices.at(17)) << " " << printRoad(edges.at(26), "/   ") << printRoad(edges.at(27), "\\") << " " << printVertex(vertices.at(18)) << " " << printRoad(edges.at(28), "/   ") << printRoad(edges.at(29), "\\") << " " << printVertex(vertices.at(19)) << " " << printRoad(edges.at(30), "/   ") << printRoad(edges.at(31), "\\") << " " << printVertex(vertices.at(20)) << std::endl;
-        std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
-        std::cout << " " << printVertex(vertices.at(21)) << " " << printRoad(edges.at(32), "/   ") << printRoad(edges.at(33), "\\") << " " << printVertex(vertices.at(22)) << " " << printRoad(edges.at(34), "/   ") << printRoad(edges.at(35), "\\") << " " << printVertex(vertices.at(23)) << " " << printRoad(edges.at(36), "/   ") << printRoad(edges.at(37), "\\") << " " << printVertex(vertices.at(24)) << " " << printRoad(edges.at(38), "/   ") << printRoad(edges.at(39), "\\") << " " << printVertex(vertices.at(25)) << " " << printRoad(edges.at(40), "/   ") << printRoad(edges.at(41), "\\") << " " << printVertex(vertices.at(26)) << std::endl;
-        std::cout << " " << printTile(tiles.at(2).at(0)) << "       " << printTile(tiles.at(2).at(1)) << "       " << printTile(tiles.at(2).at(2)) << "       " << printTile(tiles.at(2).at(3)) << "       " << printTile(tiles.at(2).at(4)) << std::endl;
-        
-        // Layer 4
-        std::cout << " " << printRoad(edges.at(42), "/   ") << printRoad(edges.at(43), "\\") << " " << printVertex(vertices.at(27)) << " " << printRoad(edges.at(44), "/   ") << printRoad(edges.at(45), "\\") << " " << printVertex(vertices.at(28)) << " " << printRoad(edges.at(46), "/   ") << printRoad(edges.at(47), "\\") << " " << printVertex(vertices.at(29)) << " " << printRoad(edges.at(48), "/   ") << printRoad(edges.at(49), "\\") << " " << printVertex(vertices.at(30)) << " " << printRoad(edges.at(50), "/   ") << printRoad(edges.at(51), "\\") << " " << printVertex(vertices.at(31)) << std::endl;
-        std::cout << "        / \\       / \\       / \\       / \\       / \\" << std::endl;
-        std::cout << " " << printVertex(vertices.at(32)) << " " << printRoad(edges.at(52), "/   ") << printRoad(edges.at(53), "\\") << " " << printVertex(vertices.at(33)) << " " << printRoad(edges.at(54), "/   ") << printRoad(edges.at(55), "\\") << " " << printVertex(vertices.at(34)) << " " << printRoad(edges.at(56), "/   ") << printRoad(edges.at(57), "\\") << " " << printVertex(vertices.at(35)) << " " << printRoad(edges.at(58), "/   ") << printRoad(edges.at(59), "\\") << " " << printVertex(vertices.at(36)) << std::endl;
-        std::cout << " " << printTile(tiles.at(3).at(0)) << "       " << printTile(tiles.at(3).at(1)) << "       " << printTile(tiles.at(3).at(2)) << "       " << printTile(tiles.at(3).at(3)) << std::endl;
-        
-        // Layer 5
-        std::cout << " " << printRoad(edges.at(60), "/   ") << printRoad(edges.at(61), "\\") << " " << printVertex(vertices.at(37)) << " " << printRoad(edges.at(62), "/   ") << printRoad(edges.at(63), "\\") << " " << printVertex(vertices.at(38)) << " " << printRoad(edges.at(64), "/   ") << printRoad(edges.at(65), "\\") << " " << printVertex(vertices.at(39)) << " " << printRoad(edges.at(66), "/   ") << printRoad(edges.at(67), "\\") << " " << printVertex(vertices.at(40)) << " " << printRoad(edges.at(68), "/   ") << printRoad(edges.at(69), "\\") << " " << printVertex(vertices.at(41)) << std::endl;
-        std::cout << "       / \\       / \\       / \\       / \\" << std::endl;
-        std::cout << "      " << printVertex(vertices.at(42)) << "         " << printVertex(vertices.at(43)) << "         " << printVertex(vertices.at(44)) << "         " << printVertex(vertices.at(45)) << std::endl;
-    } catch (const std::out_of_range &e) {
-        std::cerr << "Error: Out of range - " << e.what() << std::endl;
-    }
-}
+
 
 
 
@@ -355,130 +494,6 @@ void Board::printBoard()  {
     //     cout << "               (" << vertices[43].number << ")       (" << vertices[44].number << ")       (" << vertices[45].number << ")" << endl;
     // 
     //}
-
-
-//     void Board::distributeResources(Player &player, int diceRoll) {
-//         cout << "Distributing resources for dice roll " << diceRoll << "..." << endl;
-//     // Iterate over all tiles
-//     for (size_t layer = 0; layer < tiles.size(); ++layer) {
-//         for (size_t i = 0; i < tiles[layer].size(); ++i) {
-//             // Get the tile at the current position
-//             cout << "i" << i << endl;
-//             Tile &currentTile = tiles[layer][i];
-
-//             cout << "Checking tile at layer " << layer << ", index " << i << " with number " << currentTile.getNumber() << " and type " << currentTile.getType() << endl;
-
-
-//             // Check if the tile's number is equal to the dice roll
-//             if (currentTile.getNumber() == diceRoll) {
-//                 cout << "Tile " << layer << ", " << i << " matches the dice roll (" << diceRoll << ")." << endl;
-//                 // Iterate over all vertices of the tile
-//                 for (size_t j = 0; j < currentTile.vertices.size(); ++j) {
-//                     // Get the vertex directly
-//                     Vertex &currentVertex = currentTile.vertices[j];
-
-//                     // Check if the vertex is owned by the player
-//                     std::string owner = currentVertex.getOwner();
-//                     if (owner == player.getName()) {
-//                         cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << "." << endl;
-//                         // Check if the vertex is a settlement
-//                         if (currentVertex.getType() == "settlement") {
-//                             // Add 1 resource of the tile's type to the player
-//                             player.addResource(currentTile.getType(), 1);
-//                             // Print a message that the player received 1 resource of the tile's type from the settlement at the vertex
-//                             std::cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << std::endl;
-//                         }
-//                         // Check if the vertex is a city
-//                         else if (currentVertex.getType() == "city") {
-//                             // Add 2 resources of the tile's type to the player
-//                             player.addResource(currentTile.getType(), 2);
-//                             // Print a message that the player received 2 resources of the tile's type from the city at the vertex
-//                             std::cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << std::endl;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
-
-    /*
-    Iterate over all tiles
-     Get the tile at index i
-        Check if the tile's number is equal to the dice roll
-            Iterate over all vertices of the tile
-                Get the vertex at the vertex index
-                Check if the vertex is owned by the player
-                    Check if the vertex is a settlement
-                        Add 1 resource of the tile's type to the player
-                        Print a message that the player received 1 resource of the tile's type from the settlement at the vertex
-                    Check if the vertex is a city
-                        Add 2 resources of the tile's type to the player
-                        Print a message that the player received 2 resources of the tile's type from the city at the vertex
-
-
-    */
-    // void Board::distributeResources(Player &player, int diceRoll)
-    // {// Iterate over all tiles
-    // //     for (size_t layer = 0; layer < tiles.size(); ++layer) {
-    // //         for (size_t i = 0; i < tiles[layer].size(); ++i) {
-    // //             // Get the tile at the current position
-    // //             Tile &currentTile = tiles[layer][i];
-    //     // Iterate over all tiles
-    //    for (size_t layer = 0; layer < tiles.size(); ++layer) {
-    //         for (size_t i = 0; i < tiles[layer].size(); ++i) {
-    //             // Get the tile at the current position
-    //             Tile &currentTile = tiles[layer][i];
-            
-
-    //         // Check if the tile has the rolled number
-    //         if (currentTile.getNumber() == diceRoll)
-    //         {
-    //             // Iterate over all vertices of the tile
-    //             for (int vertexId : currentTile.vertices)
-    //             {
-    //                 // Get the vertex at vertexId
-    //                 Vertex &vertex = getVertex(vertexId);
-
-    //                 // Check if the vertex is owned by the player
-    //                 if (vertex.getOwner() == player.getName())
-    //                 {
-    //                     // Check if the vertex is a city or a settlement
-    //                     if (vertex.getType() == "city")
-    //                     {
-    //                         // Add two resources of the tile type to the player's resources
-    //                         player.addResource(currentTile.getType(), 2);
-    //                         cout << player.getName() << " got 2 " << currentTile.getType() << " from a city." << endl;
-    //                     }
-    //                     else if (vertex.getType() == "settlement")
-    //                     {
-    //                         // Add one resource of the tile type to the player's resources
-    //                         player.addResource(currentTile.getType(), 1);
-    //                         cout << player.getName() << " got 1 " << currentTile.getType() << " from a settlement." << endl;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    // }
-
-
-
-    // void Board::distributeResources(Player &player, int diceRoll)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -529,81 +544,6 @@ void Board::printBoard()  {
             
         }
     }
-
-    // void Board::distributeResources(Player &player, int diceRoll)
-    // {
-    //     cout << "Distributing resources for dice roll " << diceRoll << "...\n";
-    //     for(int i =0 ;i< 19; i++)// Iterate over all tiles
-    //    {
-    //     //cout << "Checking tile at index " << i << " with number " << getTile(i).getNumber() << " and type " << getTile(i).getType() << endl;
-    //         Tile  &currentTile = getTile(i);
-    //          // Check if the tile's number is equal to the dice roll
-    //         if (currentTile.getNumber() == diceRoll) 
-    //         {
-    //             cout << "Tile " << i << " matches the dice roll (" << diceRoll << ").\n";
-
-    //             // Iterate over all vertices of the tile
-    //             for(size_t vertexIndex=0;vertexIndex < currentTile.vertices.size(); vertexIndex++)
-    //             {
-    //                 Vertex &currentVertex = getVertex(vertexIndex);
-    //                 // Check if the vertex is owned by the player
-    //                 if(currentVertex.getOwner() == player.getName())
-    //                 {
-    //                     cout << "Player " << player.getName() << " owns vertex " << currentVertex.getNumber() << ".\n";
-    //                     // Check if the vertex is a settlement
-    //                     if(currentVertex.getType() == "settlement")
-    //                     {
-    //                         player.addResource(currentTile.getType(),1);
-    //                         cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
-    //                     }
-    //                     // Check if the vertex is a city
-    //                     else if(currentVertex.getType() == "city")
-    //                     {
-    //                         player.addResource(currentTile.getType(),2);
-    //                         cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
-    //                     }
-    //                 }
-    //             }
-                    
-    //         }
-    //    }
-    // }
-
-
-    // void Board::distributeResources(Player &player, int diceRoll)
-    // {
-    //     for(int i =0 ;i< tiles.size(); i++){ // for each tile
-
-    //         Tile  currentTile = getTile(i);
-
-    //         if(currentTile.getNumber() == diceRoll) //
-    //         {
-    //             for(int vertexIndex : currentTile.vertices) // for each vertex of the tile
-    //             {
-    //                 Vertex &currentVertex = getVertex(vertexIndex);
-    //                 if(currentVertex.getOwner() == player.getName())// if the vertex is owned by the player
-    //                 {
-    //                     //if the vertex is a settlement
-    //                     if(currentVertex.getType() == "settlement")
-    //                     {
-    //                         player.addResource(currentTile.getType(),1);
-    //                         cout << "Player " << player.getName() << " received 1 " << currentTile.getType() << " from settlement at vertex " << currentVertex.getNumber() << endl;
-    //                     }
-    //                     //if the vertex is a city
-    //                     else if(currentVertex.getType() == "city")
-    //                     {
-    //                         player.addResource(currentTile.getType(),2);
-    //                         cout << "Player " << player.getName() << " received 2 " << currentTile.getType() << " from city at vertex " << currentVertex.getNumber() << endl;
-    //                     }
-    //                 }
-    //             }
-                 
-    //         }
-                
-    //     }
-
-
-    // }
 
      void Board::initializeVerticesNeighbors()
     {

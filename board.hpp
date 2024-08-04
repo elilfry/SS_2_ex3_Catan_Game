@@ -30,13 +30,14 @@ namespace ariel {
         string type; // "settlement" or "city"
         int number;
         
+       
+    
         
         
         public:
-            
             vector<int> neighbors_edges;
             vector<int> neighbors_vertice;
-    
+            
             Vertex(int number)
             {
                 this->number = number;
@@ -77,9 +78,14 @@ namespace ariel {
 
     class Edge
     {
-        public:
+        private:
+            string owner;
             int number;
-            string owner; 
+
+            
+
+        public:
+            
             vector<int> neighbors_edges;
             vector<int> neighbors_vertice;
 
@@ -88,6 +94,26 @@ namespace ariel {
                 this->number = number;
                 this->owner = "none";
                
+            }
+
+            string getOwner() const
+            {
+                return owner;
+            }
+
+            void setOwner(string newOwner)
+            {
+                owner = newOwner;
+            }
+
+            int getNumber() const
+            {
+                return number;
+            }
+
+            void setNumber(int newNumber)
+            {
+                number = newNumber;
             }
     };
 
@@ -122,29 +148,37 @@ namespace ariel {
                 return this->type;
             }
 
+        
+
             // friend ostream& operator<<(ostream& os, const Tile& t)
             // {
             //     os << t.type << ","  << t.number;
             //     return os;
             // }
 
+            string getResourceType(int resource);
     };
 
     class Board
     {
         private:
-           
-
-        public:
-             vector<vector<Tile>> tiles;
-              vector<Vertex> vertices;
+            vector<Vertex> vertices;
             vector<Edge> edges;
-
-            Board();
+            vector<vector<Tile>> tiles;
+           
             void initializeVerticesNeighbors(); ///////---------------------------------
             void initializeEdgesNeighbors(); ///---------------------------------
             void assignVerticesAndEdgesToTiles();////-----------------------------
+            
+
+        public:
+             
+
+            Board();
+            
             ~Board();
+
+           // string getResourceType(int resource);
 
             //void initBoard();
             bool placeSettlement(Player &p, int vertexId);

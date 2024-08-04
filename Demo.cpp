@@ -34,7 +34,7 @@ int main()
     Catan catan(p1, p2, p3); //create a new game with the 3 players
    Board &board = catan.getBoard();
     //print the board
-    //board.printBoard();
+    board.printBoard();
 
 
     catan.ChooseStartingPlayer(); 
@@ -63,6 +63,8 @@ int main()
             catan.placeRoad(catan.getCurrentPlayer(), board);
             catan.previousPlayer();
         }
+            board.printBoard();
+
 
         cout << "--------------Starting the normal rounds--------------------." << endl;
 
