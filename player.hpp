@@ -55,9 +55,21 @@ namespace ariel
 
         void addKnights(int amount);
 
+        void subKnights(int amount);
+
+        void subMonopolyCard(int amount);
+
+        void subYearOfPlentyCard(int amount);
+
+        void subRoadBuildingCard(int amount);
+
         int getKnightsNum();
 
         int getVictoryPointCard();
+
+        void subVictoryPointCard(int amount);
+
+        void bigArmyCard();
 
         void addResource(int resourceType, int amount);
         void removeResource(int resourceType, int amount);

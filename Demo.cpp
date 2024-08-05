@@ -117,11 +117,13 @@ int main()
                     break;
                 
                 case 4: //buy a development card
-                    //catan.buyDevelopmentCard(player);
+                    catan.buyDevelopmentCard(player);
                     break;
 
                 case 5: //play a development card
-                    //catan.playDevelopmentCard(player);
+                    catan.playDevelopmentCard(player);
+                    endTurn = true;
+                    catan.nextPlayer();
                     break;
 
                 case 6: //make a trade

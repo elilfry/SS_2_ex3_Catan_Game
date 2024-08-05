@@ -15,6 +15,9 @@
 
 namespace ariel
 {
+
+    class Devcard; // Forward declaration
+
     class Catan
     {
     private:

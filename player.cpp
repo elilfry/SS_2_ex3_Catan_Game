@@ -48,12 +48,35 @@ namespace ariel
 
     int Player::getDevCardsSum()
     {
-        return this->devCardsSum;
+        devCardsSum = knights + victoryPointCard + monopolyCard + yearOfPlentyCard + roadBuildingCard;
+        return devCardsSum;
+        
     }
 
     void Player::addKnights(int amount)
     {
         this->knights += amount;
+    }
+
+    void Player::subKnights(int amount)
+    {
+        this->knights -= amount;
+    }
+
+
+    void Player::subMonopolyCard(int amount)
+    {
+        this->monopolyCard -= amount;
+    }
+
+    void Player::subYearOfPlentyCard(int amount)
+    {
+        this->yearOfPlentyCard -= amount;
+    }
+
+    void Player::subRoadBuildingCard(int amount)
+    {
+        this->roadBuildingCard -= amount;
     }
 
     int Player::getKnightsNum()
@@ -64,6 +87,19 @@ namespace ariel
     int Player::getVictoryPointCard()
     {
         return this->victoryPointCard;
+    }
+
+    void Player::subVictoryPointCard(int amount)
+    {
+        this->victoryPointCard -= amount;
+    }
+
+    void Player::bigArmyCard()
+    {
+        if(knights > 3)
+        {
+            points += 2;
+        }
     }
 
     void Player::printResources()
@@ -139,7 +175,7 @@ namespace ariel
         {
             knights++;
         }
-        else if(devCardType == "VictoryPoint")
+        else if(devCardType == "Victory Point")
         {
             victoryPointCard++;
         }
@@ -147,11 +183,11 @@ namespace ariel
         {
             monopolyCard++;
         }
-        else if(devCardType == "YearOfPlenty")
+        else if(devCardType == "Year Of Plenty")
         {
             yearOfPlentyCard++;
         }
-        else if(devCardType == "RoadBuilding")
+        else if(devCardType == "Road Building")
         {
             roadBuildingCard++;
         }

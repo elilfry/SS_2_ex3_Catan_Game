@@ -29,7 +29,12 @@ namespace ariel
         //suffle the dev cards
         shuffleResources(devCards);
 
-
+         //push the dev cards to the stack
+        for (size_t i = 0; i < devCards.size(); i++)
+        {
+            devCardsDeck.push(move(devCards[i]));
+        }
+        
             this->ChooseStartingPlayer();
             
     
@@ -55,11 +60,7 @@ namespace ariel
         // Shuffle the resources vector using the random number generator
         shuffle(devCards.begin(), devCards.end(), g);
 
-        //push the dev cards to the stack
-        for (size_t i = 0; i < devCards.size(); i++)
-        {
-            devCardsDeck.push(move(devCards[i]));
-        }
+       
 
     }
 

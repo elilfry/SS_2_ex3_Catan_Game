@@ -10,6 +10,7 @@ namespace ariel {
     Knight::Knight() : Devcard("Knight") {}
     void Knight::playCard(Player &player, Catan &catan) {
         player.addKnights(1);
+        player.bigArmyCard();
         cout << "Knight added to Player " << player.getName() << ". now has " << player.getKnightsNum() << " knights." << endl;
     }
 
@@ -19,8 +20,10 @@ namespace ariel {
     void VictoryPoint::playCard(Player &player, Catan &catan) 
     {
         player.addPoints(1);
+        player.subVictoryPointCard(1);
         cout << "Victory Point added to Player " << player.getName() << " now has " << player.getPoints() << " victory points." << endl;
     }
+
 
     // Constructor for Monopoly card
     Monopoly::Monopoly() : Devcard("Monopoly") {}
@@ -49,6 +52,7 @@ namespace ariel {
             }
         }
         player.addResource(resource-1, total);// Add the total amount of the resource to the current player
+        player.subMonopolyCard(1); // Remove the card from the player
         cout << "Monopoly played. Player " << player.getName() << " monopolized all " << resource << "." << std::endl;
     }
 
@@ -73,6 +77,7 @@ namespace ariel {
             }
         }
         player.addResource((resource-1), 2);
+        player.subYearOfPlentyCard(1); // Remove the card from the player
         cout << "Year of Plenty played. Player " << player.getName() << " received 2 (number) " << resource  << "." << std::endl;
     }
 
@@ -88,6 +93,8 @@ namespace ariel {
             
             catan.placeRoad(player, catan.getBoard());
             catan.placeRoad(player, catan.getBoard());
+        
+        player.subRoadBuildingCard(1); // Remove the card from the player
 
         
     }
