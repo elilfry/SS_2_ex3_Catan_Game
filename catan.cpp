@@ -14,17 +14,25 @@ namespace ariel
             players.push_back(&p2);
             players.push_back(&p3);
         
-        // if(boardInIt == 0){
-        //      board = Board();
+         for (int i = 0; i < 4; ++i) {
+            devCards.push_back(std::make_unique<VictoryPoint>());
+        }
+        for (int i = 0; i < 3; ++i) {
+            devCards.push_back(std::make_unique<Knight>());
+        }
+        for (int i = 0; i < 2; ++i) {
+        devCards.push_back(std::make_unique<Monopoly>());
+        devCards.push_back(std::make_unique<YearOfPlenty>());
+        devCards.push_back(std::make_unique<RoadBuilding>());
+        }
 
-        // }else{
-        //     cout << "The board is already initialized." << endl;
-            
-        // }
+        //suffle the dev cards
+        shuffleResources(devCards);
+
 
             this->ChooseStartingPlayer();
             
-        
+    
         
         
     }
@@ -34,7 +42,26 @@ namespace ariel
         cout << "Catan game destroyed." << endl;
     }
     
-    
+
+    vector<Player*> Catan::getPlayers()
+    {
+        return players;
+    }
+    void Catan::shuffleResources(vector<std::unique_ptr<Devcard>> &devCards)
+    {
+        random_device rd;
+        mt19937 g(rd());
+
+        // Shuffle the resources vector using the random number generator
+        shuffle(devCards.begin(), devCards.end(), g);
+
+        //push the dev cards to the stack
+        for (size_t i = 0; i < devCards.size(); i++)
+        {
+            devCardsDeck.push(move(devCards[i]));
+        }
+
+    }
 
     void Catan::ChooseStartingPlayer() //need to check
     {
@@ -189,6 +216,19 @@ namespace ariel
         player.removeResource(WHEAT, 2);
     }
 
+    void Catan::intialResources(Board &board)
+    {
+         for(int i=0; i<players.size(); i++)
+        {
+            //distribute initial resources
+            
+        board.intialDistributeResources(*players[(size_t)i]);
+        }
+    }
+
+
+
+
     bool Catan::isGameFinished()
             {
                 for (size_t i = 0; i < players.size(); i++)
@@ -243,10 +283,115 @@ namespace ariel
     }
 
     
+//     Catan::buyDevelopmentCard:
+
+// Checks if the player has enough resources to buy a development card.
+// Deducts the resources from the player if they have enough.
+// Checks if there are development cards left in the deck.
+// Gives the player a development card from the deck.
+// Prints the action summary.
+
+void Catan::buyDevelopmentCard(Player &player)
+{
+    //check if it is the player's turn
+    if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
+    {
+        cout << "It is not your turn." << endl;
+        return;
+    }
+
+    //check if there is a development card left in the deck
+    if(devCardsDeck.empty())
+    {
+        cout << "There are no development cards left in the deck." << endl;
+        return;
+    }
+
+    //check if the player has enough resources
+    if(player.getResource(WHEAT) < 1 || player.getResource(IRON) < 1 || player.getResource(SHEEP) < 1)
+    {
+        cout << "You don't have enough resources to buy a development card." << endl;
+        return;
+    }
+
+    // Deduct the resources from the player
+    player.removeResource(WHEAT, 1);
+    player.removeResource(IRON, 1);
+    player.removeResource(SHEEP, 1);
+
+    // Give the player a development card from the deck
+    std::unique_ptr<Devcard> devCard = move(devCardsDeck.top());
+    devCardsDeck.pop(); // remove the development card from the deck
+    cout << "The development card you got is: " << devCard->getType() << endl;
+    player.addDevCard(devCard->getType()); // add the development card to the player's hand
+}
+
+//     Catan::playDevelopmentCard:
+void Catan::playDevelopmentCard(Player &player)
+{
+    //check if it is the player's turn
+    if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
+    {
+        cout << "It is not your turn." << endl;
+        return;
+    }
+
+    //check if the player has any development cards
+    if(player.getDevCardsSum()<1)
+    {
+        cout << "You don't have any development cards to play." << endl;
+        return;
+    }
+
+    cout << "Please enter the development card you want to play as a String:" << endl;
+    cout << "1. Victory Point" << endl;
+    cout << "2. Knight" << endl;
+    cout << "3. Monopoly" << endl;
+    cout << "4. Year of Plenty" << endl;
+    cout << "5. Road Building" << endl;
+
+    string devCardType;
+    cin >> devCardType;
+
+    bool valid = false;
+    while (!valid) // loop until the player enters a valid development card type
+    {
+        if (devCardType == "Victory Point" || devCardType == "Knight" || devCardType == "Monopoly" || devCardType == "Year of Plenty" || devCardType == "Road Building")
+        {
+            valid = true;
+        }else if (devCardType == "exit"){
+            return;
+        }
+        else
+        {
+            cout << "Invalid development card type. Please enter again." << endl;
+            cout<< "if you want to exit enter 'exit'." << endl;
+            cin >> devCardType;
+        }
+    }
+
+    //check if the player has the development card
+    if(devCardType == "Victory Point" )
+    {
+        if(player.getVictoryPointCard() < 1)
+        {
+            cout << "You don't have a Victory Point development card to play." << endl;
+            return;
+        }else
+        {
+            //play this card
+            VictoryPoint().playCard(player, *this);
+
+        }
 
 
+    }
+    
+    
 
+}
 
+    //print the 
 
 
 

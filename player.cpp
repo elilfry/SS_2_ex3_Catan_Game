@@ -46,6 +46,26 @@ namespace ariel
         this->roadsNum += amount;
     }
 
+    int Player::getDevCardsSum()
+    {
+        return this->devCardsSum;
+    }
+
+    void Player::addKnights(int amount)
+    {
+        this->knights += amount;
+    }
+
+    int Player::getKnightsNum()
+    {
+        return this->knights;
+    }
+
+    int Player::getVictoryPointCard()
+    {
+        return this->victoryPointCard;
+    }
+
     void Player::printResources()
     {
         cout << "Player " << name << " resources:" << endl;
@@ -66,7 +86,7 @@ namespace ariel
         else
         {
             resources[resourceType] += amount;
-            cout << "Player " << name << " received " << amount << " " << resourceType << " resources." << endl;
+           // cout << "Player " << name << " received " << amount << " " << resourceType << " resources." << endl;
 
         }
     }
@@ -111,6 +131,39 @@ namespace ariel
         }
         return totalResources;
     }
+
+    void Player::addDevCard(string devCardType)
+    {
+
+        if(devCardType == "Knight")
+        {
+            knights++;
+        }
+        else if(devCardType == "VictoryPoint")
+        {
+            victoryPointCard++;
+        }
+        else if(devCardType == "Monopoly")
+        {
+            monopolyCard++;
+        }
+        else if(devCardType == "YearOfPlenty")
+        {
+            yearOfPlentyCard++;
+        }
+        else if(devCardType == "RoadBuilding")
+        {
+            roadBuildingCard++;
+        }
+        else
+        {
+            cout << "Invalid development card type." << endl;
+            return;
+        }
+       devCardsSum++;
+
+    }
+
 
     // void Player::sumIs7()
     // {

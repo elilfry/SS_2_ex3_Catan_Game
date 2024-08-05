@@ -8,6 +8,7 @@
 #include "catan.hpp"
 #include "player.hpp"
 #include "board.hpp"
+#include "devcard.hpp"
 using namespace std;
 using namespace ariel;
 
@@ -64,6 +65,7 @@ int main()
             catan.previousPlayer();
         }
             board.printBoard();
+             catan.intialResources(board);
 
 
         cout << "--------------Starting the normal rounds--------------------." << endl;
@@ -75,12 +77,17 @@ int main()
 
             cout << "Player " << catan.getCurrentPlayer().getName() << " turn." << endl;
             
-            catan.rollDice(board);
+           // catan.rollDice(board);
             catan.getCurrentPlayer().printResources();
 
+            bool endTurn = false;
+            while(!endTurn)
+            {
             cout << "Please enter the action you want to do:" << endl;
             cout << "1. Build a settlement" << endl;
             cout << "2. Build a road" << endl;
+
+            
             cout << "3. Upgrade a settlement to a city" << endl;
             cout << "4. Buy a development card" << endl;
             cout << "5. Play a development card" << endl;
@@ -124,6 +131,7 @@ int main()
                     //catan.printDetails();
                     break;
                 case 8: //end turn
+                    endTurn = true;
                     catan.nextPlayer();
                     break;
                 case 0: //exit
@@ -135,6 +143,8 @@ int main()
                     break;
                 
             }
+         }
+            board.printBoard();
         }    
 
 

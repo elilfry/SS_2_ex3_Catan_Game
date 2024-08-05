@@ -3,9 +3,14 @@
 
 #include "player.hpp"
 #include "board.hpp"
+#include "devcard.hpp"
+#include <stack>
 #include <random>
 #include <ctime>
 #include <cstdlib> 
+#include <memory>
+#include <algorithm>
+
 
 
 namespace ariel
@@ -16,10 +21,17 @@ namespace ariel
         Board board;
         vector<Player*> players; ///------
        int currentPlayer;
+        vector<std::unique_ptr<Devcard>> devCards;
+        stack<std::unique_ptr<Devcard>> devCardsDeck;
+
 
     public:
         Catan(Player& p1, Player& p2, Player& p3);
         ~Catan();
+
+        vector<Player *> getPlayers();
+
+        void shuffleResources(vector<std::unique_ptr<Devcard>> &devCards);
 
         void ChooseStartingPlayer();
         Board& getBoard();
@@ -35,6 +47,11 @@ namespace ariel
         void rollDice( Board &board);
         Player *getPlayerByName(string &name);
         void distributeResources(int sum);
+
+        void intialResources(Board &board);
+
+        void buyDevelopmentCard(Player &player);
+        void playDevelopmentCard(Player &player);
     };
 } // namespace ariel
 

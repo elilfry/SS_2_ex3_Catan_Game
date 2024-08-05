@@ -1,8 +1,8 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Werror -Wsign-conversion -g
+CXXFLAGS = -std=c++14 -Werror -Wsign-conversion -g
 LDFLAGS = -lpthread
 
-OBJS = board.o catan.o player.o Demo.o
+OBJS = board.o catan.o player.o  devcard.o Demo.o
 
 
 demo: $(OBJS)
@@ -14,13 +14,16 @@ run: demo
 board.o: board.cpp board.hpp
 	$(CXX) $(CXXFLAGS) -c board.cpp
 
-catan.o: catan.cpp catan.hpp board.hpp player.hpp
+catan.o: catan.cpp catan.hpp board.hpp player.hpp devcard.hpp
 	$(CXX) $(CXXFLAGS) -c catan.cpp
 
 player.o: player.cpp player.hpp
 	$(CXX) $(CXXFLAGS) -c player.cpp
 
-Demo.o: Demo.cpp catan.hpp player.hpp board.hpp
+devcard.o: devcard.cpp devcard.hpp player.hpp catan.hpp
+	$(CXX) $(CXXFLAGS) -c devcard.cpp
+
+Demo.o: Demo.cpp catan.hpp player.hpp board.hpp devcard.hpp
 	$(CXX) $(CXXFLAGS) -c Demo.cpp
 
 clean:

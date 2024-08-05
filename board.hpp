@@ -37,6 +37,7 @@ namespace ariel {
         public:
             vector<int> neighbors_edges;
             vector<int> neighbors_vertice;
+            vector<int> tiles;
             
             Vertex(int number)
             {
@@ -70,7 +71,11 @@ namespace ariel {
         {
             number = newNumber;
         }
-                
+        
+        void addTile(int tileId)
+        {
+        tiles.push_back(tileId);
+        }
 
            
     };
@@ -189,7 +194,10 @@ namespace ariel {
             // void placeCity(Vertex &v, Player &p);
 
             void distributeResources(Player &p, int sum);
+            void intialDistributeResources(Player &p);
             Tile &getTile(int i);
+
+            int getTileIndex(Tile &tile);
 
             Vertex &getVertex(int i);
 

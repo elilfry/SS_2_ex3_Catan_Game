@@ -16,6 +16,13 @@ namespace ariel
         int points;
         int knights = 0;
         int roadsNum = 0;
+
+        int victoryPointCard = 0;
+        int monopolyCard = 0;
+        int yearOfPlentyCard = 0;
+        int roadBuildingCard = 0;
+
+        int devCardsSum = 0;
         int totalResources = 0;
         //int settlementsNum = 0;
         //int citiesNum = 0;
@@ -44,6 +51,14 @@ namespace ariel
         int getRoadsNum();
         void addRoadsNum(int amount);
 
+        int getDevCardsSum();
+
+        void addKnights(int amount);
+
+        int getKnightsNum();
+
+        int getVictoryPointCard();
+
         void addResource(int resourceType, int amount);
         void removeResource(int resourceType, int amount);
         int getResource(int resourceType);
@@ -56,6 +71,9 @@ namespace ariel
         int getTotalResources();
         void sumIs7();
         void printResources();
+
+        //player.addDevCard(devCard->getType());
+        void addDevCard(string devCardType);
 
     };
 } // namespace ariel
