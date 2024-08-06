@@ -5,7 +5,7 @@
 namespace ariel
 {
 
-    
+    int Player::playerCount = 0;
     
      Player::Player(string name)
     {
@@ -15,6 +15,7 @@ namespace ariel
         {
             resources[i] = 0;
         }
+        this->playerNumber = ++playerCount;
     }
 
     Player::~Player()
@@ -63,17 +64,28 @@ namespace ariel
         this->knights -= amount;
     }
 
-
+    int Player::getMonopolyCard()
+    {
+        return this->monopolyCard;
+    }
     void Player::subMonopolyCard(int amount)
     {
         this->monopolyCard -= amount;
     }
 
+    int Player::getYearOfPlentyCard()
+    {
+        return this->yearOfPlentyCard;
+    }
     void Player::subYearOfPlentyCard(int amount)
     {
         this->yearOfPlentyCard -= amount;
     }
 
+    int Player::getRoadBuildingCard()
+    {
+        return this->roadBuildingCard;
+    }
     void Player::subRoadBuildingCard(int amount)
     {
         this->roadBuildingCard -= amount;
@@ -197,6 +209,29 @@ namespace ariel
             return;
         }
        devCardsSum++;
+
+    }
+
+    string Player::getColor()
+    {
+        switch(playerNumber)
+        {
+            case 1:
+                return "\033[1;33m"; //yellow
+                break;
+
+            case 2:
+                return "\033[1;34m"; //blue
+                break;
+                
+            case 3:
+                return "\033[1;31m"; //red
+                break;
+        
+            default:
+                return "\033[0m"; //default color
+                break;
+        }
 
     }
 

@@ -29,6 +29,7 @@ namespace ariel {
         string owner;
         string type; // "settlement" or "city"
         int number;
+        string color ;
         
        
     
@@ -77,6 +78,16 @@ namespace ariel {
         tiles.push_back(tileId);
         }
 
+        string getColor() const
+        {
+            return color;
+        }
+
+        void setColor(string newColor)
+        {
+            this->color = newColor;
+        }
+
            
     };
 
@@ -86,6 +97,7 @@ namespace ariel {
         private:
             string owner;
             int number;
+            string color ;
 
             
 
@@ -120,6 +132,16 @@ namespace ariel {
             {
                 number = newNumber;
             }
+
+            string getColor() const
+            {
+                return color;
+            }
+
+            void setColor(string newColor)
+            {
+                this->color = newColor;
+            }
     };
 
     class Tile
@@ -127,6 +149,7 @@ namespace ariel {
         private:
         int number;
         int type; // "desert", "wood", "brick", "sheep", "wheat", "ore"
+        int index;
 
         public:
             vector<int> edges;
@@ -136,12 +159,16 @@ namespace ariel {
             //set default ctor
             Tile() = default;
 
-            Tile (int number, int type)
+            Tile (int number, int type,int index)
             {
                 this->number = number;
                 this->type = type;
+                this->index = index;
             }
-
+            int getIndex()
+            {
+                return this->index;
+            }
             int getNumber()
             {
                 return this->number;
@@ -189,8 +216,9 @@ namespace ariel {
             bool placeSettlement(Player &p, int vertexId);
             bool placeRoad(Player &p, int edgeId);
             bool upgradeSettlementToCity(Player &p, int vertexId);
-            
-            string printVertex(Vertex vertex);
+
+            string printVertex(Vertex &vertex);
+
             // void placeCity(Vertex &v, Player &p);
 
             void distributeResources(Player &p, int sum);

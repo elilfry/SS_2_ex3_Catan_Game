@@ -16,7 +16,7 @@ using namespace ariel;
 
 int main()
 {
-    string name1="Eli", name2="Meni", name3="Hodaya";
+    string name1="Eli", name2="Meni", name3="chen";
     cout << "Welcome to Catan game right on your terminal!\n" << endl;
     // cout << "Please enter the names of the first player:" << endl;
     // cin >> name1;
@@ -45,7 +45,8 @@ int main()
 
         for(int i = 0; i < 3; i++)
         {
-            cout << "Player " << catan.getCurrentPlayer().getName() << " turn. 1st Settelment" << endl;
+            
+            cout << "\n Player " << catan.getCurrentPlayer().getName() << " turn. 1st Settelment" << endl;
             
            catan.placeSettlement(catan.getCurrentPlayer(), board);
 
@@ -58,14 +59,15 @@ int main()
         catan.previousPlayer();
         for(int i = 0; i < 3; i++)
         {
-            cout << "Player " << catan.getCurrentPlayer().getName() << " turn.2nd Settelment" << endl;
+            cout << "\n Player " << catan.getCurrentPlayer().getName() << " turn.2nd Settelment" << endl;
            catan.placeSettlement(catan.getCurrentPlayer(), board);
 
             catan.placeRoad(catan.getCurrentPlayer(), board);
             catan.previousPlayer();
         }
+            cout << "\n";
             board.printBoard();
-             catan.intialResources(board);
+            catan.intialResources(board);
 
 
         cout << "--------------Starting the normal rounds--------------------." << endl;
@@ -77,7 +79,7 @@ int main()
 
             cout << "Player " << catan.getCurrentPlayer().getName() << " turn." << endl;
             
-           // catan.rollDice(board);
+            catan.rollDice(board);
             catan.getCurrentPlayer().printResources();
 
             bool endTurn = false;

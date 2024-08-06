@@ -104,13 +104,13 @@ namespace ariel
 
         if(player.getPoints() < 2) 
         {
-            cout << "Please enter where you want to place the settlement." << endl;
+            cout << "Please enter where you want to place the settlement(0-53)." << endl;
             int place;
             cin >> place;
             
             while(!board.placeSettlement(player, place))
             {
-                cout << "Please enter again where you want to place the settlement." << endl;
+                cout << "Please enter again where you want to place the settlement(0-53)." << endl;
                 cin >> place;
             }
             player.addPoints(1);
@@ -125,13 +125,13 @@ namespace ariel
                 return;
             }
 
-            cout << "Please enter where you want to place the settlement." << endl;
+            cout << "Please enter where you want to place the settlement(0-53)." << endl;
             int place;
             cin >> place;
 
             while (!board.placeSettlement(player, place))
             {
-                cout << "Please enter again where you want to place the settlement." << endl;
+                cout << "Please enter again where you want to place the settlement(0-53)." << endl;
                 cin >> place;
             }
             // Deduct the resources from the player
@@ -184,6 +184,9 @@ namespace ariel
                 cout << "Please enter again where you want to place the road." << endl;
                 cin >> place;
             }
+
+            player.removeResource(WOOD, 1);
+            player.removeResource(BRICK, 1);
         }
     }
 
@@ -351,42 +354,96 @@ void Catan::playDevelopmentCard(Player &player)
     cout << "4. Year of Plenty" << endl;
     cout << "5. Road Building" << endl;
 
-    string devCardType;
+    int devCardType; //1 vp 2 knight 3 monopoly 4 year of plenty 5 road building
     cin >> devCardType;
 
     bool valid = false;
     while (!valid) // loop until the player enters a valid development card type
     {
-        if (devCardType == "Victory Point" || devCardType == "Knight" || devCardType == "Monopoly" || devCardType == "Year of Plenty" || devCardType == "Road Building")
+        if (devCardType>=1 && devCardType<=5)
         {
             valid = true;
-        }else if (devCardType == "exit"){
+        }else if (devCardType == 0){
             return;
         }
         else
         {
             cout << "Invalid development card type. Please enter again." << endl;
-            cout<< "if you want to exit enter 'exit'." << endl;
+            cout<< "if you want to exit enter 0." << endl;
             cin >> devCardType;
         }
     }
 
-    //check if the player has the development card
-    if(devCardType == "Victory Point" )
+    
+    switch (devCardType)
     {
-        if(player.getVictoryPointCard() < 1)
-        {
-            cout << "You don't have a Victory Point development card to play." << endl;
-            return;
-        }else
-        {
-            //play this card
-            VictoryPoint().playCard(player, *this);
+        case 1: //Victory Point
+        
+            if(player.getVictoryPointCard() < 1)
+            {
+                cout << "You don't have a Victory Point development card to play." << endl;
+                return;
+            }else
+            {
+                //play this card
+                VictoryPoint().playCard(player, *this);
 
-        }
+            }
+            break;
+        case 2: //Knight
+            if(player.getKnightsNum() < 1)
+            {
+                cout << "You don't have a Knight development card to play." << endl;
+                return;
+            }else
+            {
+                //play this card
+                Knight().playCard(player, *this);
 
+            }
+            break;
+        case 3: //Monopoly
+            if(player.getMonopolyCard() < 1)
+            {
+                cout << "You don't have a Monopoly development card to play." << endl;
+                return;
+            }else
+            {
+                //play this card
+                Monopoly().playCard(player, *this);
+
+            }
+            break;
+        case 4: //Year of Plenty
+            if(player.getYearOfPlentyCard() < 1)
+            {
+                cout << "You don't have a Year of Plenty development card to play." << endl;
+                return;
+            }else
+            {
+                //play this card
+                YearOfPlenty().playCard(player, *this);
+
+            }
+            break;
+        case 5: //Road Building
+            if(player.getRoadBuildingCard() < 1)
+            {
+                cout << "You don't have a Road Building development card to play." << endl;
+                return;
+            }else
+            {
+                //play this card
+                RoadBuilding().playCard(player, *this);
+
+            }
+            break;
+        
+    
 
     }
+
+    
     
     
 

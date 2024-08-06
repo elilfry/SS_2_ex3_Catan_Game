@@ -12,6 +12,11 @@ namespace ariel
     class Player
     {
     private:
+
+        int playerNumber;
+        static int playerCount ;
+
+
         string name;
         int points;
         int knights = 0;
@@ -57,9 +62,15 @@ namespace ariel
 
         void subKnights(int amount);
 
+        int getMonopolyCard();
+
         void subMonopolyCard(int amount);
 
+        int getYearOfPlentyCard();
+
         void subYearOfPlentyCard(int amount);
+
+        int getRoadBuildingCard();
 
         void subRoadBuildingCard(int amount);
 
@@ -87,6 +98,7 @@ namespace ariel
         //player.addDevCard(devCard->getType());
         void addDevCard(string devCardType);
 
+        string getColor();
     };
 } // namespace ariel
 
