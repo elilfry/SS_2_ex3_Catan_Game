@@ -99,6 +99,9 @@ namespace ariel
         void addDevCard(string devCardType);
 
         string getColor();
+        void tradeResources(Player &otherPlayer, int giveResource, int giveAmount, int takeResource, int takeAmount);
+        void tradeDevelopmentCards(Player &otherPlayer, int knightAmount, int woodAmount, int brickAmount, int sheepAmount, int wheatAmount, int ironAmount);
+        void printDetails();
     };
 } // namespace ariel
 

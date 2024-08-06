@@ -234,18 +234,230 @@ namespace ariel
         }
 
     }
+        /*
+        check ifthe recources are the same 
+        check if the player has enough resources to trade
+        deduct the resources from the player
+        */
+    void Player::tradeResources(Player &otherPlayer, int giveResource, int giveAmount, int takeResource, int takeAmount)
+    {
+        if(giveResource < 0 || giveResource > 4 || otherPlayer.getResource(takeResource-1)  < 0 || otherPlayer.getResource(takeResource-1) > 4 || giveResource == takeResource)
+        {
+            cout << "Invalid resource type." << endl;
+            return;
+        }
+        else if(resources[giveResource-1] < giveAmount || otherPlayer.getResource(takeResource-1) < takeAmount)
+        {
+            cout << "Not enough resources to trade." << endl;
+            return;
+        }
+        else
+        {
+            resources[giveResource-1] -= giveAmount;
+            otherPlayer.addResource(giveResource-1, giveAmount);
+            resources[takeResource-1] += takeAmount;
+            otherPlayer.removeResource(takeResource-1, takeAmount);
+            cout << "Player " << name << " traded " << giveAmount << " " << giveResource << " resources for " << takeAmount << " " << takeResource << " resources with player " << otherPlayer.getName() << "." << endl;
+        }
+    
+    }
+    /*
+    check ifthe player have knight cards
+    check if the player has enough resources to trade
+    deduct the resources from the player
+    */
+    void Player::tradeDevelopmentCards(Player &otherPlayer,int knightAmount,int woodAmount,int brickAmount, int sheepAmount, int wheatAmount,int ironAmount)
+    {
+        if(getKnightsNum() < knightAmount)
+        {
+            cout << "Not enough knight cards to trade." << endl;
+            return;
+        }
+
+        if(otherPlayer.getResource(WOOD) < woodAmount || otherPlayer.getResource(BRICK) < brickAmount || otherPlayer.getResource(SHEEP) < sheepAmount || otherPlayer.getResource(WHEAT) < wheatAmount || otherPlayer.getResource(IRON) < ironAmount)
+        {
+            cout << "Not enough resources to trade." << endl;
+            return;
+        }
+        else
+        {
+            subKnights(knightAmount);
+            otherPlayer.addResource(WOOD, woodAmount);
+            otherPlayer.addResource(BRICK, brickAmount);
+            otherPlayer.addResource(SHEEP, sheepAmount);
+            otherPlayer.addResource(WHEAT, wheatAmount);
+            otherPlayer.addResource(IRON, ironAmount);
+            cout << "Player " << name << " traded " << knightAmount << " knight cards for " << woodAmount << " wood, " << brickAmount << " brick, " << sheepAmount << " sheep, " << wheatAmount << " wheat, and " << ironAmount << " iron resources with player " << otherPlayer.getName() << "." << endl;
+        }
+
+    }
+
+    void Player::printDetails()
+    {
+
+        cout << "Player " << name << " details:" << endl;
+        cout << "Wood: " << resources[WOOD] << endl;
+        cout << "Brick: " << resources[BRICK] << endl;
+        cout << "Sheep: " << resources[SHEEP] << endl;
+        cout << "Wheat: " << resources[WHEAT] << endl;
+        cout << "Iron: " << resources[IRON] << endl;
+
+        cout<<"Points: "<<getPoints()<<endl;
+        if(getKnightsNum() > 0 ) {cout<<"Knights: "<<getKnightsNum()<<endl;}
+        if(getKnightsNum() > 3 ) {cout<<"Big Army Card: Yes"<<endl;}
+
+        if(getVictoryPointCard() > 0 ) {cout<<"Victory Point Cards: "<<getVictoryPointCard()<<endl;}
+        if(getMonopolyCard() > 0 ) {cout<<"Monopoly Cards: "<<getMonopolyCard()<<endl;}
+        if(getYearOfPlentyCard() > 0 ) {cout<<"Year Of Plenty Cards: "<<getYearOfPlentyCard()<<endl;}
+        if(getRoadBuildingCard() > 0 ) {cout<<"Road Building Cards: "<<getRoadBuildingCard()<<endl;}
 
 
-    // void Player::sumIs7()
-    // {
-    //     int total = getTotalResources();
-    //  if(total <8)
-    //  {
-    //     return;
-    //  }else//pick random 1/2 of the resources and return them to the bank
-    //  {
 
-    //  }
-    // }  
+        
+    }
+
+    /*
+    ask the player to discard half of his resources
+    */
+    void Player::sumIs7()
+    {
+        int total = getTotalResources();
+        int half = total / 2;
+
+        cout << "Displaying player " << name << " resources:" << endl;
+        printResources();
+
+        cout << "Player " << name << " has " << total << " resources." << endl;
+        cout << "Player " << name << " must discard " << half << " of his resources." << endl;
+
+        int discarded = 0;
+        
+        while(true)
+        {
+
+            int wood_discarded = 0;
+            int brick_discarded = 0;
+            int sheep_discarded = 0;
+            int wheat_discarded = 0;
+            int iron_discarded = 0;
+
+            if(getResource(WOOD) > 0)
+            {
+                while(true)
+                {
+                    cout << "How many wood resources would you like to discard?" << endl;
+                    cin >> wood_discarded;
+                    if(wood_discarded < 0 || wood_discarded > getResource(WOOD))
+                    {
+                        cout << "Invalid amount." << endl;
+                        continue; // ask the player again
+                    }
+                    else
+                    {
+                        break; // exit the first while loop
+                    }
+                
+                }
+            }
+
+            if(getResource(BRICK) > 0)
+            {
+                while(true)
+                {
+                    cout << "How many brick resources would you like to discard?" << endl;
+                    cin >> brick_discarded;
+                    if(brick_discarded < 0 || brick_discarded > getResource(BRICK))
+                    {
+                        cout << "Invalid amount." << endl;
+                        continue; // ask the player again
+                    }
+                    else
+                    {
+                        break; // exit the first while loop
+                    }
+                
+                }
+            }
+
+            if(getResource(SHEEP) > 0)
+            {
+                while(true)
+                {
+                    cout << "How many sheep resources would you like to discard?" << endl;
+                    cin >> sheep_discarded;
+                    if(sheep_discarded < 0 || sheep_discarded > getResource(SHEEP))
+                    {
+                        cout << "Invalid amount." << endl;
+                        continue; // ask the player again
+                    }
+                    else
+                    {
+                        break; // exit the first while loop
+                    }
+                
+                }
+            }
+
+            if(getResource(WHEAT) > 0)
+            {
+                while(true)
+                {
+                    cout << "How many wheat resources would you like to discard?" << endl;
+                    cin >> wheat_discarded;
+                    if(wheat_discarded < 0 || wheat_discarded > getResource(WHEAT))
+                    {
+                        cout << "Invalid amount." << endl;
+                        continue; // ask the player again
+                    }
+                    else
+                    {
+                        break; // exit the first while loop
+                    }
+                
+                }
+            }
+
+            if(getResource(IRON) > 0)
+            {
+                while(true)
+                {
+                    cout << "How many iron resources would you like to discard?" << endl;
+                    cin >> iron_discarded;
+                    if(iron_discarded < 0 || iron_discarded > getResource(IRON))
+                    {
+                        cout << "Invalid amount." << endl;
+                        continue; // ask the player again
+                    }
+                    else
+                    {
+                        break; // exit the first while loop
+                    }
+                
+                }
+            }
+
+            int total_discarded = wood_discarded + brick_discarded + sheep_discarded + wheat_discarded + iron_discarded;
+            if(total_discarded != half)
+            {
+                cout << "You must discard exactly " << half << " resources." << endl;
+                cout << "You have discarded " << total_discarded << " resources." << endl;
+                continue; // ask the player again
+            }
+            else
+            {
+                removeResource(WOOD, wood_discarded);
+                removeResource(BRICK, brick_discarded);
+                removeResource(SHEEP, sheep_discarded);
+                removeResource(WHEAT, wheat_discarded);
+                removeResource(IRON, iron_discarded);
+                cout << "Player " << name << " discarded " << total_discarded << " resources." << endl;
+                break; // exit the second while loop
+            }
+
+
+     }
+    }
+
+    
 
 } // namespace ariel

@@ -26,10 +26,14 @@ devcard.o: devcard.cpp devcard.hpp player.hpp catan.hpp
 Demo.o: Demo.cpp catan.hpp player.hpp board.hpp devcard.hpp
 	$(CXX) $(CXXFLAGS) -c Demo.cpp
 
+
+.PHONY: clean run
+
 clean:
 	rm -f *.o demo
 
-
+valgrind: demo
+	valgrind --leak-check=full --track-origins=yes ./demo
 
 
 #///////////////////////////////////////////////////////////////////////////////////////

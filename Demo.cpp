@@ -129,10 +129,10 @@ int main()
                     break;
 
                 case 6: //make a trade
-                   // catan.Trade(player);
+                    catan.trade(player);
                     break;
                 case 7: //print details
-                    //catan.printDetails();
+                    player.printDetails();
                     break;
                 case 8: //end turn
                     endTurn = true;
