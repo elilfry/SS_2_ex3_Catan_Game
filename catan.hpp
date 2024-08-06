@@ -55,6 +55,7 @@ namespace ariel
 
         void buyDevelopmentCard(Player &player);
         void playDevelopmentCard(Player &player);
+        void trade(Player &player);
     };
 } // namespace ariel
 

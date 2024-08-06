@@ -295,162 +295,232 @@ namespace ariel
 // Gives the player a development card from the deck.
 // Prints the action summary.
 
-void Catan::buyDevelopmentCard(Player &player)
-{
-    //check if it is the player's turn
-    if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
+    void Catan::buyDevelopmentCard(Player &player)
     {
-        cout << "It is not your turn." << endl;
-        return;
-    }
-
-    //check if there is a development card left in the deck
-    if(devCardsDeck.empty())
-    {
-        cout << "There are no development cards left in the deck." << endl;
-        return;
-    }
-
-    //check if the player has enough resources
-    if(player.getResource(WHEAT) < 1 || player.getResource(IRON) < 1 || player.getResource(SHEEP) < 1)
-    {
-        cout << "You don't have enough resources to buy a development card." << endl;
-        return;
-    }
-
-    // Deduct the resources from the player
-    player.removeResource(WHEAT, 1);
-    player.removeResource(IRON, 1);
-    player.removeResource(SHEEP, 1);
-
-    // Give the player a development card from the deck
-    std::unique_ptr<Devcard> devCard = move(devCardsDeck.top());
-    devCardsDeck.pop(); // remove the development card from the deck
-    cout << "The development card you got is: " << devCard->getType() << endl;
-    player.addDevCard(devCard->getType()); // add the development card to the player's hand
-}
-
-//     Catan::playDevelopmentCard:
-void Catan::playDevelopmentCard(Player &player)
-{
-    //check if it is the player's turn
-    if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
-    {
-        cout << "It is not your turn." << endl;
-        return;
-    }
-
-    //check if the player has any development cards
-    if(player.getDevCardsSum()<1)
-    {
-        cout << "You don't have any development cards to play." << endl;
-        return;
-    }
-
-    cout << "Please enter the development card you want to play as a String:" << endl;
-    cout << "1. Victory Point" << endl;
-    cout << "2. Knight" << endl;
-    cout << "3. Monopoly" << endl;
-    cout << "4. Year of Plenty" << endl;
-    cout << "5. Road Building" << endl;
-
-    int devCardType; //1 vp 2 knight 3 monopoly 4 year of plenty 5 road building
-    cin >> devCardType;
-
-    bool valid = false;
-    while (!valid) // loop until the player enters a valid development card type
-    {
-        if (devCardType>=1 && devCardType<=5)
+        //check if it is the player's turn
+        if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
         {
-            valid = true;
-        }else if (devCardType == 0){
+            cout << "It is not your turn." << endl;
             return;
         }
-        else
+
+        //check if there is a development card left in the deck
+        if(devCardsDeck.empty())
         {
-            cout << "Invalid development card type. Please enter again." << endl;
-            cout<< "if you want to exit enter 0." << endl;
-            cin >> devCardType;
+            cout << "There are no development cards left in the deck." << endl;
+            return;
         }
+
+        //check if the player has enough resources
+        if(player.getResource(WHEAT) < 1 || player.getResource(IRON) < 1 || player.getResource(SHEEP) < 1)
+        {
+            cout << "You don't have enough resources to buy a development card." << endl;
+            return;
+        }
+
+        // Deduct the resources from the player
+        player.removeResource(WHEAT, 1);
+        player.removeResource(IRON, 1);
+        player.removeResource(SHEEP, 1);
+
+        // Give the player a development card from the deck
+        std::unique_ptr<Devcard> devCard = move(devCardsDeck.top());
+        devCardsDeck.pop(); // remove the development card from the deck
+        cout << "The development card you got is: " << devCard->getType() << endl;
+        player.addDevCard(devCard->getType()); // add the development card to the player's hand
     }
 
-    
-    switch (devCardType)
+    void Catan::playDevelopmentCard(Player &player)
     {
-        case 1: //Victory Point
+        //check if it is the player's turn
+        if (player.getName() != getCurrentPlayer().getName()) // check if the player is the current player
+        {
+            cout << "It is not your turn." << endl;
+            return;
+        }
+
+        //check if the player has any development cards
+        if(player.getDevCardsSum()<1)
+        {
+            cout << "You don't have any development cards to play." << endl;
+            return;
+        }
+
+        cout << "Please enter the development card you want to play as a String:" << endl;
+        cout << "1. Victory Point" << endl;
+        cout << "2. Knight" << endl;
+        cout << "3. Monopoly" << endl;
+        cout << "4. Year of Plenty" << endl;
+        cout << "5. Road Building" << endl;
+
+        int devCardType; //1 vp 2 knight 3 monopoly 4 year of plenty 5 road building
+        cin >> devCardType;
+
+        bool valid = false;
+        while (!valid) // loop until the player enters a valid development card type
+        {
+            if (devCardType>=1 && devCardType<=5)
+            {
+                valid = true;
+            }else if (devCardType == 0){
+                return;
+            }
+            else
+            {
+                cout << "Invalid development card type. Please enter again." << endl;
+                cout<< "if you want to exit enter 0." << endl;
+                cin >> devCardType;
+            }
+        }
+
         
-            if(player.getVictoryPointCard() < 1)
-            {
-                cout << "You don't have a Victory Point development card to play." << endl;
-                return;
-            }else
-            {
-                //play this card
-                VictoryPoint().playCard(player, *this);
+        switch (devCardType)
+        {
+            case 1: //Victory Point
+            
+                if(player.getVictoryPointCard() < 1)
+                {
+                    cout << "You don't have a Victory Point development card to play." << endl;
+                    return;
+                }else
+                {
+                    //play this card
+                    VictoryPoint().playCard(player, *this);
 
-            }
-            break;
-        case 2: //Knight
-            if(player.getKnightsNum() < 1)
-            {
-                cout << "You don't have a Knight development card to play." << endl;
-                return;
-            }else
-            {
-                //play this card
-                Knight().playCard(player, *this);
+                }
+                break;
+            case 2: //Knight
+                if(player.getKnightsNum() < 1)
+                {
+                    cout << "You don't have a Knight development card to play." << endl;
+                    return;
+                }else
+                {
+                    //play this card
+                    Knight().playCard(player, *this);
 
-            }
-            break;
-        case 3: //Monopoly
-            if(player.getMonopolyCard() < 1)
-            {
-                cout << "You don't have a Monopoly development card to play." << endl;
-                return;
-            }else
-            {
-                //play this card
-                Monopoly().playCard(player, *this);
+                }
+                break;
+            case 3: //Monopoly
+                if(player.getMonopolyCard() < 1)
+                {
+                    cout << "You don't have a Monopoly development card to play." << endl;
+                    return;
+                }else
+                {
+                    //play this card
+                    Monopoly().playCard(player, *this);
 
-            }
-            break;
-        case 4: //Year of Plenty
-            if(player.getYearOfPlentyCard() < 1)
-            {
-                cout << "You don't have a Year of Plenty development card to play." << endl;
-                return;
-            }else
-            {
-                //play this card
-                YearOfPlenty().playCard(player, *this);
+                }
+                break;
+            case 4: //Year of Plenty
+                if(player.getYearOfPlentyCard() < 1)
+                {
+                    cout << "You don't have a Year of Plenty development card to play." << endl;
+                    return;
+                }else
+                {
+                    //play this card
+                    YearOfPlenty().playCard(player, *this);
 
-            }
-            break;
-        case 5: //Road Building
-            if(player.getRoadBuildingCard() < 1)
-            {
-                cout << "You don't have a Road Building development card to play." << endl;
-                return;
-            }else
-            {
-                //play this card
-                RoadBuilding().playCard(player, *this);
+                }
+                break;
+            case 5: //Road Building
+                if(player.getRoadBuildingCard() < 1)
+                {
+                    cout << "You don't have a Road Building development card to play." << endl;
+                    return;
+                }else
+                {
+                    //play this card
+                    RoadBuilding().playCard(player, *this);
 
-            }
-            break;
-        
-    
+                }
+                break;
+          
+        }
 
     }
+    /*
+    trade function
+    case 1 trade resources
+    case 2 dev card
 
-    
-    
-    
+    check if it is the player turn
+    */
+    void Catan::trade(Player &player) {
+    // Check if it is the player's turn
+    if (player.getName() != getCurrentPlayer().getName()) {
+        cout << "It is not your turn." << endl;
+        return;
+    }
 
+    cout << "Please enter 1 to trade resources or 2 to trade development cards(0 to exit): ";
+    int choice;
+    cin >> choice;
+    if(choice < 0 || choice > 2) {
+        cout << "Invalid choice. Please enter again." << endl;
+        return;
+    }
+
+    switch(choice) {
+        case 0:
+            return;
+        
+        case 1: { // Trade resources
+            cout << "Please enter the resource you want to give (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron): ";
+            int giveResource;
+            cin >> giveResource;
+            if(giveResource < 1 || giveResource > 5) {
+                cout << "Invalid resource type. Please enter again." << endl;
+                return;
+            }
+            cout << "Please enter the amount of the resource you want to give: ";
+            int giveAmount;
+            cin >> giveAmount;
+            if(giveAmount < 1) {
+                cout << "Invalid amount. Please enter again." << endl;
+                return;
+            }
+
+            cout << "Enter the name of the player you want to trade with: ";
+            string name;
+            cin >> name;
+            Player* otherPlayer = getPlayerByName(name);
+            if (otherPlayer == nullptr) {
+                cout << "Player not found." << endl;
+                return;
+            } else if (otherPlayer->getName() == player.getName()) {
+                cout << "You can't trade with yourself." << endl;
+                return;
+            }
+
+            //player.tradeResources(*otherPlayer, giveResource, giveAmount, takeResource, takeAmount);
+            break;
+        }
+        
+        case 2: { // Trade development cards
+            cout << "Please enter the name of the player you want to trade with: ";
+            string name2;
+            cin >> name2;
+            Player* otherPlayer = getPlayerByName(name2);
+            if (otherPlayer == nullptr) {
+                cout << "Player not found." << endl;
+                return;
+            } else if(otherPlayer->getName() == player.getName()) {
+                cout << "You can't trade with yourself." << endl;
+                return;
+            }
+
+            //player.tradeDevelopmentCards(*otherPlayer, giveAmount, woodAmount, brickAmount, sheepAmount, wheatAmount, ironAmount); 
+                break;
+        }
+        
+        default:
+            cout << "Invalid choice. Please enter again." << endl;
+            return;
+    }
 }
-
-    //print the 
-
 
 
 

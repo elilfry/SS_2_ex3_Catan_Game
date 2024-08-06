@@ -129,7 +129,7 @@ int main()
                     break;
 
                 case 6: //make a trade
-                    //catan.makeTrade(player);
+                   // catan.Trade(player);
                     break;
                 case 7: //print details
                     //catan.printDetails();
