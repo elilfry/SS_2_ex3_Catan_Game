@@ -16,7 +16,7 @@ using namespace ariel;
 
 int main()
 {
-    string name1="Eli", name2="Meni", name3="chen";
+    string name1="Eli", name2="Meni", name3="Chen";
     cout << "Welcome to Catan game right on your terminal!\n" << endl;
     // cout << "Please enter the names of the first player:" << endl;
     // cin >> name1;

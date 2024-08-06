@@ -128,7 +128,7 @@ namespace ariel
     {
         if(resourceType < 0 || resourceType > 4)
         {
-            cout << "Invalid resource type." << endl;
+            cout << "Invalid resource type in add resource." << endl;
             return;
         }
         else
@@ -143,7 +143,7 @@ namespace ariel
     {
         if(resourceType < 0 || resourceType > 4)
         {
-            cout << "Invalid resource type." << endl;
+            cout << "Invalid resource type in remove function." << endl;
             return;
         }
         else if(resources[resourceType] < amount)
@@ -161,7 +161,7 @@ namespace ariel
     {
         if(resourceType < 0 || resourceType > 4)
         {
-            cout << "Invalid resource type." << endl;
+            cout << "Invalid resource type in remove function." << endl;
             return -1;
         }
         else
@@ -173,6 +173,7 @@ namespace ariel
            // int getTotalResources();
     int Player::getTotalResources()
     {
+        int totalResources = 0;
         for(int i = 0; i < 5; i++)
         {
             totalResources += resources[i];
@@ -195,7 +196,7 @@ namespace ariel
         {
             monopolyCard++;
         }
-        else if(devCardType == "Year Of Plenty")
+        else if(devCardType == "Year of Plenty")
         {
             yearOfPlentyCard++;
         }
@@ -241,6 +242,7 @@ namespace ariel
         */
     void Player::tradeResources(Player &otherPlayer, int giveResource, int giveAmount, int takeResource, int takeAmount)
     {
+        cout << "other player resources" << otherPlayer.getResource(takeResource-1) << endl;
         if(giveResource < 0 || giveResource > 4 || otherPlayer.getResource(takeResource-1)  < 0 || otherPlayer.getResource(takeResource-1) > 4 || giveResource == takeResource)
         {
             cout << "Invalid resource type." << endl;

@@ -162,7 +162,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
             vertices[i].setType("settlement");
             vertices[i].setOwner(player.getName());
             vertices[i].setColor(player.getColor());
-            cout << "Settlement placed successfully at vertex " << vertex <<  "to player " << currentVertex.getOwner() << endl;
+            cout << "Settlement placed successfully at vertex " << vertex <<  " to player " << currentVertex.getOwner() << endl;
            
             return true;
         }
@@ -262,6 +262,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
         currentVertex.setType("city");
         player.removeResource(WHEAT, 2);
         player.removeResource(IRON, 3);
+        player.addPoints(1);
         cout << "Settlement at vertex " << vertex << " upgraded to a city." << endl;
 
         return true;
@@ -344,7 +345,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
     
     void Board::distributeResources(Player &player, int diceRoll)
     {
-        cout << "Distributing resources for dice roll " << diceRoll << "..." << endl;
+        //cout << "Distributing resources for dice roll " << diceRoll << "..." << endl;
 
         // Iterate over all tiles
         for (int i = 0; i < 19; i++)

@@ -139,6 +139,9 @@ namespace ariel
             player.removeResource(BRICK, 1);
             player.removeResource(SHEEP, 1);
             player.removeResource(WHEAT, 1);
+            
+            player.addPoints(1);
+
 
 
         }
@@ -216,8 +219,7 @@ namespace ariel
             cin >> place;
         }
         // Deduct the resources from the player
-        player.removeResource(IRON, 3);
-        player.removeResource(WHEAT, 2);
+        
     }
 
     void Catan::intialResources(Board &board)
@@ -254,6 +256,7 @@ namespace ariel
         int dice2 = rand() % 6 + 1;
         int sum = dice1 + dice2;
         cout << "The sum of the dice is: " << sum << endl;
+        cout << "\n";
 
         if(sum == 7)
         {
@@ -350,7 +353,7 @@ namespace ariel
             return;
         }
 
-        cout << "Please enter the development card you want to play as a String:" << endl;
+        cout << "Please enter the development card you want to play :" << endl;
         cout << "1. Victory Point" << endl;
         cout << "2. Knight" << endl;
         cout << "3. Monopoly" << endl;
@@ -486,7 +489,13 @@ namespace ariel
                 cout << "Invalid amount. Please enter again." << endl;
                 return;
             }
-
+            //print the players
+            for (size_t i = 0; i < players.size(); i++)
+            {
+                if(players[i]->getName() != player.getName()){
+                    cout << players[i]->getName() << endl;
+                }
+            }
             cout << "Enter the name of the player you want to trade with: ";
             string name;
             cin >> name;
