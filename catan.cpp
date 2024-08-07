@@ -117,8 +117,7 @@ namespace ariel
         }
         else //if it is the 2nd round of the game or more
         {
-            //check if the player has enough resources
-
+            //check if the player has enough resources(1 wood, 1 brick, 1 sheep, 1 wheat)
             if(player.getResource(WOOD) < 1 || player.getResource(BRICK) < 1 || player.getResource(SHEEP) < 1 || player.getResource(WHEAT) < 1)
             {
                 cout << "You don't have enough resources to place a settlement." << endl;
@@ -131,8 +130,12 @@ namespace ariel
 
             while (!board.placeSettlement(player, place))
             {
-                cout << "Please enter again where you want to place the settlement(0-53)." << endl;
+                cout << "Please enter again where you want to place the settlement(0-53) , -1 to exit ." << endl;
                 cin >> place;
+                if(place == -1)
+                {
+                    return;
+                }
             }
             // Deduct the resources from the player
             player.removeResource(WOOD, 1);
@@ -166,8 +169,12 @@ namespace ariel
 
             while(!board.placeRoad(player, place))
             {
-                cout << "Please enter again where you want to place the road." << endl;
+                cout << "Please enter again where you want to place the road, -1 to exit" << endl;
                 cin >> place;
+                if(place == -1)
+                {
+                    return;
+                }
             }
         }else //if it is the 2nd round of the game or more
         {
@@ -184,8 +191,12 @@ namespace ariel
 
             while (!board.placeRoad(player, place))
             {
-                cout << "Please enter again where you want to place the road." << endl;
+                cout << "Please enter again where you want to place the road, -1 to exit" << endl;
                 cin >> place;
+                if(place == -1)
+                {
+                    return;
+                }
             }
 
             player.removeResource(WOOD, 1);
@@ -215,8 +226,12 @@ namespace ariel
 
         while (!board.upgradeSettlementToCity(player, place))
         {
-            cout << "Please enter again where you want to upgrade the settlement to a city." << endl;
+            cout << "Please enter again where you want to upgrade the settlement to a city. -1 to exit" << endl;
             cin >> place;
+            if(place == -1)
+            {
+                return;
+            }
         }
         // Deduct the resources from the player
         

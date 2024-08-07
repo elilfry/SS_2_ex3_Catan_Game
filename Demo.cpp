@@ -1,6 +1,6 @@
 /**
  * Demo file for Ex3.
- *
+ * Mail: elifrydman08@gmail.com
  */
 #include <iostream>
 #include <stdexcept>
@@ -12,7 +12,6 @@
 using namespace std;
 using namespace ariel;
 
-//create a new game with print to the user each step and printing the map of the game in the terminal
 
 int main()
 {
@@ -33,8 +32,7 @@ int main()
     cout << "Player " << name3 << " created." << endl;
 
     Catan catan(p1, p2, p3); //create a new game with the 3 players
-   Board &board = catan.getBoard();
-    //print the board
+    Board &board = catan.getBoard();
     board.printBoard();
 
 
@@ -88,8 +86,6 @@ int main()
             cout << "Please enter the action you want to do:" << endl;
             cout << "1. Build a settlement" << endl;
             cout << "2. Build a road" << endl;
-
-            
             cout << "3. Upgrade a settlement to a city" << endl;
             cout << "4. Buy a development card" << endl;
             cout << "5. Play a development card" << endl;

@@ -3,6 +3,7 @@ CXXFLAGS = -std=c++14 -Werror -Wsign-conversion -g
 LDFLAGS = -lpthread
 
 OBJS = board.o catan.o player.o  devcard.o Demo.o
+TEST_OBJS = test.o board.o catan.o player.o devcard.o
 
 
 demo: $(OBJS)
@@ -10,6 +11,10 @@ demo: $(OBJS)
 
 run: demo
 	./demo
+
+test: $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o test $(TEST_OBJS) $(LDFLAGS)
+	./test
 
 board.o: board.cpp board.hpp
 	$(CXX) $(CXXFLAGS) -c board.cpp
@@ -26,11 +31,14 @@ devcard.o: devcard.cpp devcard.hpp player.hpp catan.hpp
 Demo.o: Demo.cpp catan.hpp player.hpp board.hpp devcard.hpp
 	$(CXX) $(CXXFLAGS) -c Demo.cpp
 
+test.o: test.cpp board.hpp player.hpp catan.hpp devcard.hpp
+	$(CXX) $(CXXFLAGS) -c test.cpp
 
-.PHONY: clean run
+
+.PHONY: clean run test
 
 clean:
-	rm -f *.o demo
+	rm -f *.o demo test
 
 valgrind: demo
 	valgrind --leak-check=full --track-origins=yes ./demo

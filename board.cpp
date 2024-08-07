@@ -3,9 +3,6 @@
 namespace ariel
 {
 
-
-
-    //vector <int> numbers = {2 , 3 , 3 , 4 , 4 , 5 , 5 , 6 , 6 , 8 ,8 , 9 , 9 , 10 , 10 , 11 , 11 , 12}; //numbers for the tiles
     vector<int> numbers = {
         10, 2, 9,
         12, 6, 4, 10,
@@ -21,20 +18,14 @@ namespace ariel
         WOOD, IRON, WHEAT, SHEEP,
         BRICK, WHEAT, SHEEP
     };
-    // Initialize the 2D vector of tiles with the appropriate layer sizes 3 4 5 4 3 
-    // and fill it with the appropriate tiles.
-
-
-      
-
 
 /*
 Resources and Numbers Layout:
-Top row: 10 (iron), 2 (Wool), 9 (Wheat)
-Second row: 12 (Wheat), 6 (Brick), 4 (Wood), 10 (Wheat)
-Third row: 9 (Brick), 11 (Wool), Desert, 3 (Wood), 8 (iron)
-Fourth row: 8 (Wheat), 3 (Wood), 4 (Wool), 5 (Wood)
-Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
+Top row: 10 (Iron), 2 (Sheep), 9 (Wood)
+Second row: 12 (Wheat), 6 (Brick), 4 (Sheep), 10 (Brick)
+Third row: 9 (Wheat), 11 (Wood), Desert, 3 (Wood), 8 (Iron)
+Fourth row: 8 (Wood), 3 (Iron), 4 (Wheat), 5 (Sheep)
+Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
 */
     
 
@@ -42,15 +33,14 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
     Board::Board()
     {
 
-        
-         tiles = {
+         tiles = {     // Initialize the 2D vector of tiles with the appropriate layer sizes 3 4 5 4 3 
         vector<Tile>(3),
         vector<Tile>(4),
         vector<Tile>(5),
         vector<Tile>(4),
         vector<Tile>(3)
     };    
-        // Initialize tiles with resources and numbers
+        // Initialize tiles with resources and numbers and indices
         size_t resourceIndex = 0;
         size_t numberIndex = 0;
         int tileIndex = 0;
@@ -64,23 +54,21 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
         }
 
         
-        // Initialize the board with 19 tiles.
         
         // Initialize the board with 54 vertices.
         for(int i = 0; i < 54; i++)
         {
             vertices.push_back(Vertex(i));
         }
-        initializeVerticesNeighbors(); // -------------------------------------------
+        initializeVerticesNeighbors(); // add the neighbors of each vertex 
         // Initialize the board with 72 edges.
         for(int i = 0; i < 72; i++)
         {
             edges.push_back(Edge(i));
         }
-        initializeEdgesNeighbors(); // -------------------------------------------
-        // Assign vertices and edges to the tiles -------------------------------------------
-        assignVerticesAndEdgesToTiles();// -------------------------------------------
-        // Initialize the neighbors of the vertices and edges. -------------------------------------------
+        initializeEdgesNeighbors(); // add the neighbors of each edge
+        
+        assignVerticesAndEdgesToTiles();// Initialize the vertices and edges of the tiles
 
     }
     Board::~Board() {    }         // Destructor implementation
@@ -108,16 +96,16 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
 
     bool Board::placeSettlement(Player &player, int vertex)
     {
-        if (vertex < 0 || vertex >= 54)
+        if (vertex < 0 || vertex >= 54) // Check if the vertex is out of range
         {
             cout << "Invalid vertex, vertex is out of range, you chose: " << vertex <<endl;
             return false;
         }
 
-    for (size_t i = 0; i < vertices.size(); i++)
+    for (size_t i = 0; i < vertices.size(); i++) // Iterate over all vertices on the board
     {
         Vertex &currentVertex = vertices[i];
-        if (currentVertex.getNumber() == vertex)
+        if (currentVertex.getNumber() == vertex) // Check if the vertex is the one we are looking for
         {
             // Check if the vertex is already occupied
             if (currentVertex.getOwner() != "none")
@@ -180,7 +168,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
         }
 
         
-            Edge currentEdge = edges[(size_t)edge];
+            Edge currentEdge = edges[(size_t)edge]; // Get the edge at index edge
             
                 // Check if the edge is already occupied
                 if (currentEdge.getOwner() != "none")
@@ -199,10 +187,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                         // Place the Road at the edge
                          edges[(size_t)edge].setOwner(player.getName());
                         edges[(size_t)edge].setColor(player.getColor());
-                        
-
-                        //cout << "the color is " << currentEdge.getColor() << "\033[0m" <<  endl;
-
+                    
                         player.addRoadsNum(1);
                         cout << "Road placed successfully at edge " << edge << "." << endl;
                         return true;
@@ -225,7 +210,6 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
                                 edges[(size_t)edge].setOwner(player.getName());
                                 edges[(size_t)edge].setColor(player.getColor());
                                 
-                               // cout << "the color is " << currentEdge.getColor() << "\033[0m" <<  endl;
                                 player.addRoadsNum(1);
                                 cout << "Road placed successfully at edge " << edge << "." << endl;
                                 return true;
@@ -283,9 +267,9 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (iron)
         }else{
             if(vertex.getNumber()<10)
             {
-                return vertex.getColor() + vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")" + "\033[0m" + "     " ;
+                return vertex.getColor() + vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")" + "\033[0m" + "    " ;
             }else{
-                return vertex.getColor() +vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")" +"\033[0m" + "    " ;
+                return vertex.getColor() +vertex.getOwner() + "(" + to_string(vertex.getNumber()) + ")" +"\033[0m" + " " ;
 
             }
         }

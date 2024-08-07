@@ -298,11 +298,12 @@ namespace ariel
     {
 
         cout << "Player " << name << " details:" << endl;
-        cout << "Wood: " << resources[WOOD] << endl;
-        cout << "Brick: " << resources[BRICK] << endl;
-        cout << "Sheep: " << resources[SHEEP] << endl;
-        cout << "Wheat: " << resources[WHEAT] << endl;
-        cout << "Iron: " << resources[IRON] << endl;
+        printResources();
+        // cout << "Wood: " << resources[WOOD] << endl;
+        // cout << "Brick: " << resources[BRICK] << endl;
+        // cout << "Sheep: " << resources[SHEEP] << endl;
+        // cout << "Wheat: " << resources[WHEAT] << endl;
+        // cout << "Iron: " << resources[IRON] << endl;
 
         cout<<"Points: "<<getPoints()<<endl;
         if(getKnightsNum() > 0 ) {cout<<"Knights: "<<getKnightsNum()<<endl;}
