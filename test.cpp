@@ -382,17 +382,205 @@ TEST_CASE("Test bigArmyCard") {
 
 
 
-// TEST_CASE("Test sumIs7") {
-//     Player p1("Ivy");
 
-//     // Add resources
-//     p1.addResource(WOOD, 4);
-//     p1.addResource(BRICK, 4);
 
-//     // Simulate the discarding process (you might need to mock the input for a real test)
-//     p1.sumIs7();
 
-//     // Check that half the resources were discarded
-//     CHECK(p1.getTotalResources() == 4);
-// }
+
+
+
+
+
+//////////////////////////////////////////////////////////////////// catan ///////////////////////////////////////////////////////////////////////////////
+
+
+TEST_CASE("Test current player turn management") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan catan(p1, p2, p3);
+
+    // Check initial random player
+    Player &currentPlayer = catan.getCurrentPlayer();
+    REQUIRE((currentPlayer.getName() == "Alice" || currentPlayer.getName() == "Bob" || currentPlayer.getName() == "Charlie"));
+
+    // Check setting current player manually
+    catan.setCurrentPlayer(1);  // Set to Bob
+    CHECK_EQ(catan.getCurrentPlayer().getName(), "Bob");
+
+    catan.setCurrentPlayer(2);  // Set to Charlie
+    CHECK_EQ(catan.getCurrentPlayer().getName(), "Charlie");
+
+    // Check next and previous player functions
+    catan.nextPlayer();
+    CHECK_EQ(catan.getCurrentPlayer().getName(), "Alice");
+
+    catan.previousPlayer();
+    CHECK_EQ(catan.getCurrentPlayer().getName(), "Charlie");
+}
+
+TEST_CASE("End of game check") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan catan(p1, p2, p3);
+
+    CHECK_FALSE(catan.isGameFinished());
+
+    p1.addPoints(10);
+    CHECK(catan.isGameFinished());  // Alice reaches 10 points, game should end
+}
+
+TEST_CASE("Buying development card with insufficient resources") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan catan(p1, p2, p3);
+
+    catan.setCurrentPlayer(0);  // Alice's turn
+
+    // Alice does not have enough resources
+    catan.buyDevelopmentCard(p1);
+    CHECK_EQ(p1.getDevCardsSum(), 0);  // Alice should not be able to buy a development card
+}
+
+
+
+TEST_CASE("Placing settlement not on player's turn") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan game(p1, p2, p3);
+
+    game.setCurrentPlayer(0);  // Set current player to Alice
+
+    // Redirect standard input to simulate Bob trying to place a settlement
+    istringstream input("0\n");
+    cin.rdbuf(input.rdbuf());
+    
+    game.placeSettlement(p2, game.getBoard());
+    CHECK_EQ(p2.getPoints(), 0);  // Bob should not be able to place a settlement on Alice's turn
+}
+
+TEST_CASE("Placing road not on player's turn") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan game(p1, p2, p3);
+
+    game.setCurrentPlayer(1);  // Set current player to Bob
+
+    // Redirect standard input to simulate Charlie trying to place a road
+    istringstream input("0\n");
+    cin.rdbuf(input.rdbuf());
+
+    game.placeRoad(p3, game.getBoard());
+    CHECK_EQ(p3.getRoadsNum(), 0);  // Charlie should not be able to place a road on Bob's turn
+}
+
+TEST_CASE("Upgrading settlement to city not on player's turn") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan game(p1, p2, p3);
+
+    game.setCurrentPlayer(2);  // Set current player to Charlie
+
+    // Give Alice enough resources to upgrade a settlement
+    p1.addResource(WHEAT, 2);
+    p1.addResource(IRON, 3);
+
+    // Redirect standard input to simulate Alice trying to upgrade a settlement
+    istringstream input("0\n");
+    cin.rdbuf(input.rdbuf());
+
+    game.upgradeSettlementToCity(p1, game.getBoard());
+    Vertex &v = game.getBoard().getVertex(0);
+    CHECK_NE(v.getType(), "city");  // Alice should not be able to upgrade a settlement on Charlie's turn
+}
+
+TEST_CASE("Placing settlement without enough resources") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Player p3("Charlie");
+    Catan game(p1, p2, p3);
+
+    game.setCurrentPlayer(0);  // Set current player to Alice
+
+    // Redirect standard input to simulate Alice trying to place another settlement
+    istringstream input("1\n");
+    cin.rdbuf(input.rdbuf());
+
+    game.placeSettlement(p1, game.getBoard());
+    CHECK_EQ(p1.getPoints(), 1);  // Alice should not be able to place another settlement due to insufficient resources
+}
+
+
+////////////////////////////////////////////////////////devcard //////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+// Test for Knight card
+TEST_CASE("Knight card functionality") {
+    Player p1("Alice");
+    Catan game(p1, p1, p1);
+
+    p1.addKnights(1);  // Alice has 1 knight card
+
+    Knight knight;
+    knight.playCard(p1, game);
+
+    CHECK(p1.getKnightsNum() == 0);  // The knight card should be used
+    CHECK(p1.getActiveKnightSum() == 1);  // Alice should now have 1 active knight
+}
+
+// Test for Victory Point card
+TEST_CASE("Victory Point card functionality") {
+    Player p1("Alice");
+    Catan game(p1, p1, p1);
+
+    p1.addPoints(0);  // Alice starts with 0 points
+
+    VictoryPoint vp;
+    vp.playCard(p1, game);
+
+    CHECK(p1.getPoints() == 1);  // Alice should gain 1 victory point
+}
+
+// Test for Monopoly card with edge cases
+TEST_CASE("Monopoly card functionality and invalid resource type handling") {
+    Player p1("Alice");
+    Player p2("Bob");
+    Catan game(p1, p2, p1);
+
+    p2.addResource(WOOD, 5);  // Bob has 5 wood
+
+    istringstream simulatedInput("1\n");  // Alice chooses to monopolize Wood
+    streambuf* originalCin = cin.rdbuf(simulatedInput.rdbuf());  // Redirect std::cin
+
+    Monopoly monopoly;
+    monopoly.playCard(p1, game);
+
+    CHECK(p1.getResource(WOOD) == 5);  // Alice should now have 5 wood
+    CHECK(p2.getResource(WOOD) == 0);  // Bob should have 0 wood
+
+    cin.rdbuf(originalCin);  // Restore std::cin to its original state
+}
+
+// Test for Year of Plenty card with invalid resource type handling
+TEST_CASE("Year of Plenty card functionality and invalid resource type handling") {
+    Player p1("Alice");
+    Catan game(p1, p1, p1);
+
+    istringstream simulatedInput("2\n");  // Alice chooses to receive Brick
+    streambuf* originalCin = cin.rdbuf(simulatedInput.rdbuf());  // Redirect std::cin
+
+    YearOfPlenty yop;
+    yop.playCard(p1, game);
+
+    CHECK(p1.getResource(BRICK) == 2);  // Alice should now have 2 brick
+
+    cin.rdbuf(originalCin);  // Restore std::cin to its original state
+}
+
 

@@ -80,6 +80,12 @@ namespace ariel
         return *players[(size_t)currentPlayer];
     }
 
+    void Catan::setCurrentPlayer(int playerIndex) //for testing
+    {
+    currentPlayer = playerIndex;
+    }
+
+
     void Catan::nextPlayer()
     {
         currentPlayer = (currentPlayer + 1) % 3;
@@ -282,10 +288,10 @@ namespace ariel
             //itrate through the players and do the player.sumIs7
             for(int i=0; i<players.size(); i++)
             {
-                // if(players[(size_t)i]->getTotalResources() > 7){
-                // (*players[(size_t)i]).sumIs7();
+                if(players[(size_t)i]->getTotalResources() > 7){
+                (*players[(size_t)i]).sumIs7();
 
-                // }
+                }
                 cout << "Player " << players[(size_t)i]->getName() << " 7" << endl;
             }
             return;

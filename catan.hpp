@@ -40,6 +40,7 @@ namespace ariel
         void ChooseStartingPlayer();
         Board& getBoard();
         Player& getCurrentPlayer();
+        void setCurrentPlayer(int playerIndex); //for testing
         void nextPlayer();
         void previousPlayer();
 
