@@ -279,10 +279,11 @@ namespace ariel
             //itrate through the players and do the player.sumIs7
             for(int i=0; i<players.size(); i++)
             {
-                if(players[(size_t)i]->getTotalResources() > 7){
-                (*players[(size_t)i]).sumIs7();
+                // if(players[(size_t)i]->getTotalResources() > 7){
+                // (*players[(size_t)i]).sumIs7();
 
-                }
+                // }
+                cout << "Player " << players[(size_t)i]->getName() << " 7" << endl;
             }
             return;
                 
@@ -309,13 +310,13 @@ namespace ariel
     }
 
     
-//     Catan::buyDevelopmentCard:
+    //     Catan::buyDevelopmentCard:
 
-// Checks if the player has enough resources to buy a development card.
-// Deducts the resources from the player if they have enough.
-// Checks if there are development cards left in the deck.
-// Gives the player a development card from the deck.
-// Prints the action summary.
+    // Checks if the player has enough resources to buy a development card.
+    // Deducts the resources from the player if they have enough.
+    // Checks if there are development cards left in the deck.
+    // Gives the player a development card from the deck.
+    // Prints the action summary.
 
     void Catan::buyDevelopmentCard(Player &player)
     {
@@ -463,13 +464,132 @@ namespace ariel
         }
 
     }
+
+    void Catan::trade(Player &player) 
+    {
+        // Check if it is the player's turn
+        if (player.getName() != getCurrentPlayer().getName()) {
+            cout << "It is not your turn." << endl;
+            return;
+        }
+
+        int choice = getValidInput(0, 3, "Please enter 1 to trade resources, or 2 to trade development cards , or 3 to trade with the bank ,(0 to exit): ");
+        switch(choice) 
+        {
+            case 0: return;
+            case 1: tradeResources(player); break;
+            case 2: tradeDevelopmentCard(player); break;
+            case 3: tradeWithBank(player); break;
+            default: cout << "Invalid choice -1." << endl;
+        }
+
+    }
+
+
+    int Catan::getValidInput(int min, int max, const string& prompt) {
+      int input;
+    while (true) {
+        cout << prompt;
+        cin >> input;
+        if (cin.fail() || input < min || input > max) {
+            cin.clear(); // Clear error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore incorrect input
+            cout << "Invalid input, please try again.\n";
+        } else {
+            break; // Valid input, break the loop
+        }
+    }
+    return input;
+}
+
+    void Catan::tradeResources(Player &player) {
+        
+        int giveResource = getValidInput(1, 5, "Please enter the resource you want to give (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron): ");
+        int giveAmount = getValidInput(1, INT_MAX, "Please enter the amount of the resource you want to give(positive number): ");
+
+        //print the players
+        for (size_t i = 0; i < players.size(); i++)
+        {
+            if(players[i]->getName() != player.getName()){
+                cout << players[i]->getName() << endl;
+            }
+        }
+
+        cout<< "Enter the name of the player you want to trade with: ";
+        string name;
+        cin >> name;
+        Player* otherPlayer = getPlayerByName(name); // Get the player to trade with
+        if(otherPlayer == nullptr) {
+            cout << "Player not found." << endl;
+            return;
+        } else if(otherPlayer->getName() == player.getName()) { // Check if the player is trying to trade with themselves
+            cout << "You can't trade with yourself." << endl;
+            return;
+        }
+
+        int takeResource = getValidInput(1, 5, "Please enter the resource you want to give (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron): ");
+        int takeAmount = getValidInput(1, INT_MAX, "Please enter the amount of the resource you want to give(positive number): ");
+
+        player.tradeResources(*otherPlayer, giveResource-1, giveAmount, takeResource-1, takeAmount); // Trade resources
+
+
+    }
+
+    void Catan::tradeDevelopmentCard(Player &player) {
+        //print the players
+        for (size_t i = 0; i < players.size(); i++)
+        {
+            if(players[i]->getName() != player.getName()){
+                cout << players[i]->getName() << endl;
+            }
+        }
+        cout << "Please enter the name of the player you want to trade with: ";
+        string name;
+        cin >> name;
+        Player* otherPlayer = getPlayerByName(name);
+        if(otherPlayer == nullptr) {
+            cout << "Player not found." << endl;
+            return;
+        } else if(otherPlayer->getName() == player.getName()) {
+            cout << "You can't trade with yourself." << endl;
+            return;
+        }
+
+        int knightAmount = getValidInput(1, INT_MAX, "Please enter the amount of Knight development cards you want to give(positive number): ");
+
+        cout << "now player " << otherPlayer->getName() << " enter the amount of resources you want to give " << endl;
+
+        int woodAmount = getValidInput(0, INT_MAX, "Please enter the amount of Wood you want to give(positive number): ");
+        int brickAmount = getValidInput(0, INT_MAX, "Please enter the amount of Brick you want to give(positive number): ");
+        int sheepAmount = getValidInput(0, INT_MAX, "Please enter the amount of Sheep you want to give(positive number): ");
+        int wheatAmount = getValidInput(0, INT_MAX, "Please enter the amount of Wheat you want to give(positive number): ");
+        int ironAmount = getValidInput(0, INT_MAX, "Please enter the amount of Iron you want to give(positive number): ");
+
+        player.tradeDevelopmentCards(*otherPlayer, knightAmount, woodAmount, brickAmount, sheepAmount, wheatAmount, ironAmount); // Trade development cards
+    }
+
+    void Catan::tradeWithBank(Player &player) 
+    {
+        int getResource = getValidInput(1, 5, "Please enter the resource you want to get from the bank (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron): ");
+        int amount = getValidInput(1, INT_MAX, "Please enter the amount of the resource you want to get(positive number): ");
+
+        cout << "The amount you need to give is " << amount * 4 << " of the same resource." << endl;
+        int giveResource = getValidInput(1, 5, "Please enter the resource you want to give to the bank (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron): ");
+
+        player.tradeWithBank(getResource - 1, amount, giveResource - 1); // Trade with the bankP@tra
+    }
+
+
+
+
+
     /*
     trade function
     case 1 trade resources
     case 2 dev card
 
     check if it is the player turn
-    */
+    
     void Catan::trade(Player &player) {
     // Check if it is the player's turn
     if (player.getName() != getCurrentPlayer().getName()) {
@@ -477,10 +597,10 @@ namespace ariel
         return;
     }
 
-    cout << "Please enter 1 to trade resources or 2 to trade development cards(0 to exit): ";
+    cout << "Please enter 1 to trade resources, or 2 to trade development cards , or 3 to trade with the bank ,(0 to exit): ";
     int choice;
     cin >> choice;
-    if(choice < 0 || choice > 2) {
+    if(choice < 0 || choice > 3) {
         cout << "Invalid choice. Please enter again." << endl;
         return;
     }
@@ -584,13 +704,47 @@ namespace ariel
             player.tradeDevelopmentCards(*otherPlayer, knightAmount, woodAmount, brickAmount, sheepAmount, wheatAmount, ironAmount); 
                 break;
         }
-        
+
+        case 3: { // Trade with the bank
+            cout << "Please enter the resource you want to get from the bank (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron , 0 to exit): ";
+            cout << "the trade is 4 to 1" << endl;
+            int getResource;
+            cin >> getResource;
+            while(getResource < 0 || getResource > 5) {
+                cout << "Invalid resource type. Please enter again." << endl;
+                cin >> getResource;
+                if(getResource == 0)
+                {
+                    return;
+                }
+            }
+            cout << "Please enter the amount of the resource you want to get: ";
+            int amount;
+            cin >> amount;
+            while(amount < 1) {
+                cout << "Invalid amount. Please enter again." << endl;
+                cin >> amount;
+            }
+            cout<< "you need to give 4 resources of the same resource to get 1 resource" << endl;
+            cout << "Please enter the resource you want to give to the bank (1. Wood, 2. Brick, 3. Sheep, 4. Wheat, 5. Iron): ";
+            int giveResource;
+            cin >> giveResource;
+            while(giveResource < 1 || giveResource > 5) {
+                cout << "Invalid resource type. Please enter again." << endl;
+                cin >> giveResource;
+            }
+            cout << "The amout you need to give is "<< amount*4 << " of the same resource" << endl;
+
+            player.tradeWithBank(getResource-1, amount, giveResource-1); // Trade with the bank
+            break;
+        }
+
         default:
             cout << "Invalid choice. Please enter again." << endl;
             return;
     }
 }
-
+*/
 
 
 

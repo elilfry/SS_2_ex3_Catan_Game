@@ -64,6 +64,14 @@ namespace ariel
         this->knights -= amount;
     }
 
+    void Player::addActiveKnights(int amount)
+    {
+        this->activeKnights += amount;
+    }
+
+
+
+
     int Player::getMonopolyCard()
     {
         return this->monopolyCard;
@@ -96,6 +104,11 @@ namespace ariel
         return this->knights;
     }
 
+    int Player::getActiveKnightSum()
+    {
+        return this->activeKnights;
+    }
+
     int Player::getVictoryPointCard()
     {
         return this->victoryPointCard;
@@ -108,9 +121,12 @@ namespace ariel
 
     void Player::bigArmyCard()
     {
-        if(knights > 3)
+        int activeKnights = getActiveKnightSum();
+        if(activeKnights >= 3)
         {
-            points += 2;
+            addPoints(2);
+            cout << "Player " << getName() << " got the big army card " << endl ;
+
         }
     }
 
@@ -236,29 +252,29 @@ namespace ariel
 
     }
         /*
-        check ifthe recources are the same 
+        check if the recources are the same 
         check if the player has enough resources to trade
         deduct the resources from the player
-        */
+        */ //0 1 2 10
     void Player::tradeResources(Player &otherPlayer, int giveResource, int giveAmount, int takeResource, int takeAmount)
     {
-        cout << "other player resources" << otherPlayer.getResource(takeResource-1) << endl;
-        if(giveResource < 0 || giveResource > 4 || otherPlayer.getResource(takeResource-1)  < 0 || otherPlayer.getResource(takeResource-1) > 4 || giveResource == takeResource)
+       
+        if(giveResource < 0 || giveResource > 4 || takeResource < 0 || takeResource > 4 || giveResource == takeResource)
         {
             cout << "Invalid resource type." << endl;
             return;
         }
-        else if(resources[giveResource-1] < giveAmount || otherPlayer.getResource(takeResource-1) < takeAmount)
+        else if(resources[giveResource] < giveAmount || otherPlayer.getResource(takeResource) < takeAmount) // check if the player has enough resources to trade
         {
             cout << "Not enough resources to trade." << endl;
             return;
         }
         else
         {
-            resources[giveResource-1] -= giveAmount;
-            otherPlayer.addResource(giveResource-1, giveAmount);
-            resources[takeResource-1] += takeAmount;
-            otherPlayer.removeResource(takeResource-1, takeAmount);
+            resources[giveResource] -= giveAmount;
+            otherPlayer.addResource(giveResource, giveAmount);
+            resources[takeResource] += takeAmount;
+            otherPlayer.removeResource(takeResource, takeAmount);
             cout << "Player " << name << " traded " << giveAmount << " " << giveResource << " resources for " << takeAmount << " " << takeResource << " resources with player " << otherPlayer.getName() << "." << endl;
         }
     
@@ -294,20 +310,43 @@ namespace ariel
 
     }
 
+    void Player::tradeWithBank( int getResource,int amount,int giveResource)
+    {
+        if(getResource < 0 || getResource > 4 || giveResource < 0 || giveResource > 4 || getResource == giveResource)
+        {
+            cout << "Invalid resource type." << endl;
+            return;
+        }
+        else if(resources[giveResource] < amount)
+        {
+            cout << "Not enough resources to trade with the bank." << endl;
+            return;
+        }
+        else
+        {
+            removeResource(giveResource, amount*4);
+            addResource(getResource, amount);  
+            
+            cout << "Player " << name << " traded " << amount*4 << " " << giveResource << " resources for " << amount << " " << getResource << " resources with the bank." << endl;
+        }
+
+        return;
+        
+
+    }
+
+
     void Player::printDetails()
     {
 
-        cout << "Player " << name << " details:" << endl;
+        cout << "Player " << name << " details: \n" << endl;
         printResources();
-        // cout << "Wood: " << resources[WOOD] << endl;
-        // cout << "Brick: " << resources[BRICK] << endl;
-        // cout << "Sheep: " << resources[SHEEP] << endl;
-        // cout << "Wheat: " << resources[WHEAT] << endl;
-        // cout << "Iron: " << resources[IRON] << endl;
+       
 
-        cout<<"Points: "<<getPoints()<<endl;
+        cout<<"\n Points: "<<getPoints()<<endl;
         if(getKnightsNum() > 0 ) {cout<<"Knights: "<<getKnightsNum()<<endl;}
-        if(getKnightsNum() > 3 ) {cout<<"Big Army Card: Yes"<<endl;}
+        if(getActiveKnightSum()) {cout << "active knights: " << getActiveKnightSum() << endl;}
+        if(getActiveKnightSum() > 3 ) {cout<<"Big Army Card: Yes"<<endl;}
 
         if(getVictoryPointCard() > 0 ) {cout<<"Victory Point Cards: "<<getVictoryPointCard()<<endl;}
         if(getMonopolyCard() > 0 ) {cout<<"Monopoly Cards: "<<getMonopolyCard()<<endl;}

@@ -9,9 +9,10 @@ namespace ariel {
     // Constructor for Knight card
     Knight::Knight() : Devcard("Knight") {}
     void Knight::playCard(Player &player, Catan &catan) {
-        player.addKnights(1);
+        player.addActiveKnights(1); //add to the active Knight
+        player.subKnights(1); //add to the active Knight
         player.bigArmyCard();
-        cout << "Knight added to Player " << player.getName() << ". now has " << player.getKnightsNum() << " knights." << endl;
+        cout << " Active Knight added to Player " << player.getName() << ". now has " << player.getActiveKnightSum() << " active knights." << endl;
     }
 
     // Constructor for Victory Point card
@@ -78,7 +79,7 @@ namespace ariel {
         }
         player.addResource((resource-1), 2);
         player.subYearOfPlentyCard(1); // Remove the card from the player
-        cout << "Year of Plenty played. Player " << player.getName() << " received 2 (number) " << resource  << "." << std::endl;
+        cout << "Year of Plenty played. Player " << player.getName() << " received 2 (number) " << (resource-1)  << "." << std::endl;
     }
 
     // Constructor for Road Building card

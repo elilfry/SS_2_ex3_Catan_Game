@@ -83,7 +83,7 @@ int main()
             bool endTurn = false;
             while(!endTurn)
             {
-            cout << "Please enter the action you want to do:" << endl;
+            cout << "\nPlease enter the action you want to do:" << endl;
             cout << "1. Build a settlement" << endl;
             cout << "2. Build a road" << endl;
             cout << "3. Upgrade a settlement to a city" << endl;
@@ -92,7 +92,8 @@ int main()
             cout << "6. Make a trade" << endl;
             cout << "7. Print details" << endl;
             cout << "8. End turn" << endl;
-            cout << "0. Exit" << endl;
+            cout << "0. Exit \n" << endl;
+            
 
 
             int action = -1;

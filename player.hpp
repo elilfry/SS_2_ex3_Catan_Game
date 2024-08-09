@@ -20,6 +20,7 @@ namespace ariel
         string name;
         int points;
         int knights = 0;
+        int activeKnights=0;
         int roadsNum = 0;
 
         int victoryPointCard = 0;
@@ -62,6 +63,10 @@ namespace ariel
 
         void subKnights(int amount);
 
+        void addActiveKnights(int amount);
+
+        int getActiveKnightSum();
+
         int getMonopolyCard();
 
         void subMonopolyCard(int amount);
@@ -101,6 +106,7 @@ namespace ariel
         string getColor();
         void tradeResources(Player &otherPlayer, int giveResource, int giveAmount, int takeResource, int takeAmount);
         void tradeDevelopmentCards(Player &otherPlayer, int knightAmount, int woodAmount, int brickAmount, int sheepAmount, int wheatAmount, int ironAmount);
+        void tradeWithBank(int resource, int amount, int giveResource);
         void printDetails();
     };
 } // namespace ariel

@@ -10,6 +10,7 @@
 #include <cstdlib> 
 #include <memory>
 #include <algorithm>
+#include <climits>
 
 
 
@@ -55,7 +56,13 @@ namespace ariel
 
         void buyDevelopmentCard(Player &player);
         void playDevelopmentCard(Player &player);
+        
         void trade(Player &player);
+        int getValidInput(int min, int max, const string &prompt);
+        void tradeResources(Player &player);
+        void tradeDevelopmentCard(Player &player);
+        void tradeWithBank(Player &player);
+        //void trade(Player &player);
     };
 } // namespace ariel
 
