@@ -266,7 +266,7 @@ namespace ariel
         }
         else if(resources[giveResource] < giveAmount || otherPlayer.getResource(takeResource) < takeAmount) // check if the player has enough resources to trade
         {
-            cout << "Not enough resources to trade." << endl;
+            cout << "Invalid resource type." << endl;
             return;
         }
         else
@@ -317,7 +317,7 @@ namespace ariel
             cout << "Invalid resource type." << endl;
             return;
         }
-        else if(resources[giveResource] < amount)
+        else if(resources[giveResource] < amount*4)
         {
             cout << "Not enough resources to trade with the bank." << endl;
             return;

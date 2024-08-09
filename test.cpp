@@ -10,301 +10,389 @@ using namespace ariel;
 using namespace std;
 
 
-TEST_CASE("Board Tests")
+TEST_CASE("Test placeSettlement")
 {
     Board board;
     Player p1("Alice");
     Player p2("Bob");
     Player p3("Charlie");
 
-    SUBCASE("Test placeSettlement")
-    {
-        bool flag = board.placeSettlement(p1, 9);
-        CHECK(flag);
-        CHECK(board.getVertex(9).getOwner() == "Alice");
+    // Test placeSettlement-first 2 rounds
+      
+        //test case 1: Successfully place a settlement on a free vertex
 
-        flag = board.placeSettlement(p1, 9);
+        bool flag = board.placeSettlement(p1, 0);
+        CHECK(flag);
+        // board.placeRoad(p1, 0);
+        // board.placeRoad(p1, 1);
+
+        // Test Case 2: Place a settlement on an already occupied vertex
+        flag = board.placeSettlement(p1, 0);
         CHECK(!flag); // Cannot place another settlement on the same vertex
 
-        flag = board.placeSettlement(p2, 9);
-        CHECK(!flag); // Cannot place another settlement on the same vertex
+        // Test Case 3: Place a settlement on a vertex near to another settlement
+        flag = board.placeSettlement(p2, 1);
+        CHECK(!flag); // Cannot place a settlement near to another settlement
 
-        flag = board.placeSettlement(p2, 10);
-        CHECK(!flag); // Cannot place a settlement new to another settlement
+        // Test Case 4: Place a settlement on a non-existent vertex
+        flag = board.placeSettlement(p3, 100);
+        CHECK(!flag); // Cannot place a settlement on a non-existent vertex
 
+    //Test placeSettlement- normal rounds
+        board.placeRoad(p1, 0);
+        p1.addPoints(2);
 
-    }
+        //test 1:  Attempt to place a settlement next to another settlement without the proper spacing
+        flag = board.placeSettlement(p1, 1);
+        CHECK(!flag);
 
-    SUBCASE("Test placeRoad")
-    {
-        board.placeSettlement(p1, 9);
-        bool flag = board.placeRoad(p1, 9);
+        //test 2:  Place a settlement connected to an owned road
+        board.placeRoad(p1, 1);      
+        flag = board.placeSettlement(p1,2);  
         CHECK(flag);
-        //CHECK(board.getEdge(9).getOwner() == "Alice");
 
-        flag = board.placeRoad(p1, 9);
-        CHECK(!flag); // Cannot place another road on the same edge
+        // //test 3 : valid placement of settlement
+        // board.placeRoad(p1,2);
+        // CHECK(board.placeSettlement(p1,3));
 
-        flag = board.placeRoad(p2, 9);
-        CHECK(!flag); // Cannot place a road on an edge with another player's settlement
-
-        flag = board.placeRoad(p2, 10);
-        CHECK(!flag); // Cannot place a road on an edge with no settlement
+        //test 4:out of bounds placement
+        flag = board.placeSettlement(p1, 100);
+        CHECK(!flag);
+        // Test Case 5: Place settlement without an adjacent road 
+        flag = board.placeSettlement(p1, 4);
+        CHECK(!flag);
+    
     }
 
+TEST_CASE("Test placeRoad") {
+    Board board;
+    Player p1("Alice");
+    Player p2("Bob");
 
+    // Test Case 1: Successfully place a road connected to a settlement
+    CHECK(board.placeSettlement(p1, 0)); // Place a settlement first
+    CHECK(board.placeRoad(p1, 0)); // Place a road connected to the settlement
 
+    // Test Case 2: Place a road on an already occupied edge
+    CHECK(!board.placeRoad(p2, 0)); // Edge is already occupied by p1
 
+    // Test Case 3: Place a road on an edge that has no adjacent settlement or road owned by the player
+    CHECK(!board.placeRoad(p1, 10)); // No adjacent settlement or road for p1 on edge 10
 
+    // Test Case 4: Successfully place a road connected to another road owned by the player
+    CHECK(board.placeRoad(p1, 1)); // Edge 1 is adjacent to edge 0, which is owned by p1
 
+    // Test Case 5: cannot place more then 2 roads without a settlement
+    CHECK(!(board.placeRoad(p1, 2))); 
+
+    // Test Case 5: Place a road on a non-existent edge
+    CHECK(!board.placeRoad(p1, 100)); // Edge 100 is out of bounds
+
+    // Test Case 7: Place a road on a valid edge with adjacent road but no adjacent settlement owned by the player
+    CHECK(!board.placeRoad(p2, 1)); // Edge 1 is adjacent to edge 0, but no adjacent settlement owned by p2
 }
-// TEST_CASE("Player Tests") {
-//     Player player("Eli");
 
-//     SUBCASE("Test getName") {
-//         CHECK(player.getName() == "Eli");
-//     }
+TEST_CASE("Test upgradeSettlementToCity") {
+    Board board;
+    Player p1("Alice");
+    Player p2("Bob");
 
-//     SUBCASE("Test addResource") {
-//         player.addResource(WOOD, 2);
-//         CHECK(player.getResource(WOOD) == 2);
-//     }
+    // Test Case 1: Successful upgrade of a settlement to a city
+    board.placeSettlement(p1, 10);
+    bool flag = board.upgradeSettlementToCity(p1, 10);
+    CHECK(flag); 
+    CHECK(board.getVertex(10).getType() == "city"); // The vertex should now be a city
 
-//     SUBCASE("Test removeResource") {
-//         player.addResource(WOOD, 2);
-//         player.removeResource(WOOD, 1);
-//         CHECK(player.getResource(WOOD) == 1);
-//     }
+    // Test Case 2: Attempt to upgrade a settlement that doesn't belong to the player
+    board.placeSettlement(p2, 20);
+    flag = board.upgradeSettlementToCity(p1, 20);
+    CHECK(!flag); // Should fail since the settlement doesn't belong to p1
 
-//     SUBCASE("Test getTotalResources") {
-//         player.addResource(WOOD, 2);
-//         player.addResource(BRICK, 3);
-//         CHECK(player.getTotalResources() == 5);
-//     }
+    // Test Case 3: Attempt to upgrade a non-existent vertex
+    flag = board.upgradeSettlementToCity(p1, 100);
+    CHECK(!flag); // Should fail due to invalid vertex index
 
-//     SUBCASE("Test sumIs7") {
-//         player.addResource(WOOD, 10);
-//         player.sumIs7();
-//         CHECK(player.getResource(WOOD) == 5);
-//     }
+    // Test Case 4: Attempt to upgrade a vertex that is not a settlement
+    flag = board.upgradeSettlementToCity(p1, 10); // 10 is already a city
+    CHECK(!flag); // Should fail because it's already a city
+
+    // Test Case 5: Attempt to upgrade an empty vertex
+    flag = board.upgradeSettlementToCity(p1, 15);
+    CHECK(!flag); // Should fail because there's no settlement on the vertex
+}
+
+TEST_CASE("Test getTile") {
+    Board board;
+
+    // Test valid tile indices
+    CHECK_NOTHROW(board.getTile(0));
+    CHECK_NOTHROW(board.getTile(10));
+    CHECK_NOTHROW(board.getTile(18));
+
+    // Test invalid tile indices
+    CHECK_THROWS_AS(board.getTile(-1), std::invalid_argument);
+    CHECK_THROWS_AS(board.getTile(19), std::invalid_argument);
+}
+
+TEST_CASE("Test distributeResources") {
+    Board board;
+    Player p1("Alice");
+    Player p2("Bob");
+
+    // Place settlements for players
+    board.placeSettlement(p1, 10);
+    board.placeSettlement(p2, 14);
+
+    // Test resource distribution for dice roll 9 (tiles at index 2, 6,)
+    
+    board.distributeResources(p1, 9);
+    board.distributeResources(p2, 9);
+
+    CHECK(p1.getResource(WOOD) == 0);  // Player 1 should get 0 wood (tile 2)
+    CHECK(p2.getResource(WOOD) == 1);  // Player 2 should get 1 wood
+
+    // Test resource distribution for dice roll 8 (tiles at index 10, 14)
+    
+    board.distributeResources(p1, 10);
+    board.distributeResources(p2, 10);
+
+    CHECK(p1.getResource(IRON) == 1);  // Player 1 should get 1 Iron
+    CHECK(p2.getResource(IRON) == 0);  // Player 2 should get 0 Iron (tile 0)
+}
+
+TEST_CASE("Test intialDistributeResources") {
+    Board board;
+    Player p1("Alice");
+
+    // Place settlements for the player
+    board.placeSettlement(p1, 10);
+    board.placeSettlement(p1, 24);
+
+    // Initial resource distribution
+    board.intialDistributeResources(p1);
+
+    CHECK(p1.getResource(WOOD) == 1);  // 1 Wood from tiles 11 
+    CHECK(p1.getResource(BRICK) == 2);  // 1 Brick from tile 4 and 6
+    CHECK(p1.getResource(WHEAT) == 0); 
+    CHECK(p1.getResource(SHEEP) == 1);  // 1 Sheep from tile 1
+    CHECK(p1.getResource(IRON) == 2);// 2 iron from tile 0 tile 12
+}
+
+////////////////////////////////////////// player //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+TEST_CASE("Test addPoints and getPoints") {
+    Player p1("Alice");
+
+    // Initial points should be 0
+    CHECK(p1.getPoints() == 0);
+
+    // Add points and check
+    p1.addPoints(2);
+    CHECK(p1.getPoints() == 2);
+
+    p1.addPoints(3);
+    CHECK(p1.getPoints() == 5);
+}
+
+
+
+
+
+
+TEST_CASE("Test addResource, removeResource, and getResource") {
+    Player p1("Bob");
+
+    // Initially, all resources should be 0
+    for (int i = 0; i < 5; i++) {
+        CHECK(p1.getResource(i) == 0);
+    }
+
+    // Add resources and check
+    p1.addResource(WOOD, 3);
+    p1.addResource(BRICK, 2);
+    CHECK(p1.getResource(WOOD) == 3);
+    CHECK(p1.getResource(BRICK) == 2);
+
+    // Remove resources and check
+    p1.removeResource(WOOD, 1);
+    p1.removeResource(BRICK, 2);
+    CHECK(p1.getResource(WOOD) == 2);
+    CHECK(p1.getResource(BRICK) == 0);
+
+    // Try to remove more resources than available
+    p1.removeResource(WOOD, 5);
+    CHECK(p1.getResource(WOOD) == 2);  // Should remain 2, as there's not enough to remove
+}
+TEST_CASE("Test addResource and removeResource with invalid resource type") {
+    Player p1("Alice");
+
+    // Attempt to add an invalid resource type
+    p1.addResource(-1, 5);
+    CHECK(p1.getResource(WOOD) == 0);  // Should not change the resources
+
+    // Attempt to remove an invalid resource type
+    p1.removeResource(6, 3);
+    CHECK(p1.getResource(WOOD) == 0);  // Should not change the resources
+
+    // Ensure no valid resources are affected
+    p1.addResource(WOOD, 3);
+    CHECK(p1.getResource(WOOD) == 3);
+}
+
+TEST_CASE("Test getTotalResources") {
+    Player p1("Charlie");
+
+    // Initially, total resources should be 0
+    CHECK(p1.getTotalResources() == 0);
+
+    // Add resources and check the total
+    p1.addResource(WOOD, 2);
+    p1.addResource(BRICK, 1);
+    p1.addResource(WHEAT, 4);
+    CHECK(p1.getTotalResources() == 7);
+
+    // Remove some resources and check the total
+    p1.removeResource(WHEAT, 2);
+    CHECK(p1.getTotalResources() == 5);
+}
+
+TEST_CASE("Test addDevCard and getDevCardsSum") {
+    Player p1("Dave");
+
+    // Initially, no development cards
+    CHECK(p1.getDevCardsSum() == 0);
+
+    // Add different development cards
+    p1.addDevCard("Knight");
+    p1.addDevCard("Victory Point");
+    p1.addDevCard("Monopoly");
+
+    // Sum should reflect the total number of dev cards
+    CHECK(p1.getDevCardsSum() == 3);
+
+    // Add more and check
+    p1.addDevCard("Year of Plenty");
+    p1.addDevCard("Road Building");
+    CHECK(p1.getDevCardsSum() == 5);
+}
+TEST_CASE("Test tradeResources") {
+    Player p1("Eli");
+    Player p2("Meni");
+
+    // Initialize resources
+    p1.addResource(WOOD, 4);
+    p2.addResource(BRICK, 3);
+
+    // Perform a trade: 2 WOOD for 1 BRICK
+    p1.tradeResources(p2, WOOD, 2, BRICK, 1);
+
+    // Check the resulting resources
+    CHECK(p1.getResource(WOOD) == 2);
+    CHECK(p1.getResource(BRICK) == 1);
+    CHECK(p2.getResource(WOOD) == 2);
+    CHECK(p2.getResource(BRICK) == 2);
+}
+
+TEST_CASE("Test tradeResources with invalid resource type and insufficient resources") {
+    Player p1("Bob");
+    Player p2("Charlie");
+
+    // Initialize resources
+    p1.addResource(WOOD, 2);
+    p2.addResource(BRICK, 3);
+
+    // Attempt to trade with an invalid resource type
+    p1.tradeResources(p2, -1, 2, BRICK, 1);
+    CHECK(p1.getResource(WOOD) == 2);
+    CHECK(p2.getResource(BRICK) == 3);
+
+    // Attempt to trade with insufficient resources
+    p1.tradeResources(p2, WOOD, 5, BRICK, 1);
+    CHECK(p1.getResource(WOOD) == 2);  // Should not change
+    CHECK(p2.getResource(BRICK) == 3);  // Should not change
+}
+
+TEST_CASE("Test tradeWithBank") {
+    Player p1("George");
+
+    // Initialize resources
+    p1.addResource(WOOD, 8);
+
+    // Trade 4 WOOD for 1 BRICK
+    p1.tradeWithBank(BRICK, 1, WOOD);
+
+    // Check the resulting resources
+    CHECK(p1.getResource(WOOD) == 4);
+    CHECK(p1.getResource(BRICK) == 1);
+}
+
+TEST_CASE("Test tradeWithBank with invalid resource type and insufficient resources") {
+    Player p1("Dave");
+
+    // Initialize resources
+    p1.addResource(WOOD, 4);
+
+    // Attempt to trade with an invalid resource type
+    p1.tradeWithBank(-1, 1, WOOD);
+    CHECK(p1.getResource(WOOD) == 4);
+
+    // Attempt to trade with insufficient resources
+    p1.tradeWithBank(BRICK, 2, WOOD);  // Trying to trade 8 WOOD but only has 4
+    CHECK(p1.getResource(WOOD) == 4);  // Should not change
+    CHECK(p1.getResource(BRICK) == 0);  // Should not change
+}
+
+TEST_CASE("Test tradeDevelopmentCards with insufficient knight cards") {
+    Player p1("Eve");
+    Player p2("Frank");
+
+    // Add some resources but no knights
+    p2.addResource(WOOD, 3);
+    p2.addResource(BRICK, 2);
+
+    // Attempt to trade knight cards when the player has none
+    p1.tradeDevelopmentCards(p2, 1, 2, 1, 0, 0, 0);
+    CHECK(p1.getKnightsNum() == 0);  // No knights to trade
+    CHECK(p2.getResource(WOOD) == 3);
+    CHECK(p2.getResource(BRICK) == 2);
+
+    // Add knights and try again
+    p1.addKnights(1);
+    p1.tradeDevelopmentCards(p2, 2, 2, 1, 0, 0, 0);  // Trying to trade 2 knights but only has 1
+    CHECK(p1.getKnightsNum() == 1);  // Should not change
+    CHECK(p2.getResource(WOOD) == 3);
+    CHECK(p2.getResource(BRICK) == 2);
+}
+
+
+TEST_CASE("Test bigArmyCard") {
+    Player p1("Hannah");
+
+    // Initially, points should be 0
+    CHECK(p1.getPoints() == 0);
+
+    // Add active knights
+    p1.addActiveKnights(3);
+
+    // Check big army card logic
+    p1.bigArmyCard();
+    CHECK(p1.getPoints() == 2);  // Should have added 2 points
+}
+
+
+
+// TEST_CASE("Test sumIs7") {
+//     Player p1("Ivy");
+
+//     // Add resources
+//     p1.addResource(WOOD, 4);
+//     p1.addResource(BRICK, 4);
+
+//     // Simulate the discarding process (you might need to mock the input for a real test)
+//     p1.sumIs7();
+
+//     // Check that half the resources were discarded
+//     CHECK(p1.getTotalResources() == 4);
 // }
-
-// TEST_CASE("Board Tests") {
-//     Board board;
-//     Player player("Eli");
-
-//     SUBCASE("Test placeSettlement") {
-//         bool success = board.placeSettlement(player, 0);
-//         CHECK(success);
-//         CHECK(board.getVertex(0).getOwner() == "Eli");
-
-//         success = board.placeSettlement(player, 0);
-//         CHECK(!success);  // Cannot place another settlement on the same vertex
-//     }
-
-//     SUBCASE("Test placeRoad") {
-//         board.placeSettlement(player, 0);
-//         bool success = board.placeRoad(player, 0);
-//         CHECK(success);
-//         CHECK(board.getEdge(0).getOwner() == "Eli");
-//     }
-
-//     SUBCASE("Test upgradeSettlementToCity") {
-//         board.placeSettlement(player, 0);
-//         bool success = board.upgradeSettlementToCity(player, 0);
-//         CHECK(!success);  // Not enough resources
-
-//         player.addResource(WHEAT, 2);
-//         player.addResource(IRON, 3);
-//         success = board.upgradeSettlementToCity(player, 0);
-//         CHECK(success);
-//         CHECK(board.getVertex(0).getType() == "city");
-//     }
-
-//     SUBCASE("Test distributeResources") {
-//         board.placeSettlement(player, 0);
-//         player.addResource(WHEAT, 2);
-//         player.addResource(IRON, 3);
-//         board.upgradeSettlementToCity(player, 0);
-
-//         board.distributeResources(player, 10);
-//         CHECK(player.getResource(IRON) == 5);  // Received 2 IRON from the city on tile with number 10
-//     }
-// }
-
-// TEST_CASE("Catan Tests") {
-//     Player p1("Eli"), p2("Meni"), p3("Chen");
-//     Catan game(p1, p2, p3);
-
-//     SUBCASE("Test ChooseStartingPlayer") {
-//         game.ChooseStartingPlayer();
-//         CHECK((game.getCurrentPlayer().getName() == "Eli" ||
-//                game.getCurrentPlayer().getName() == "Meni" ||
-//                game.getCurrentPlayer().getName() == "Chen"));
-//     }
-
-//     SUBCASE("Test nextPlayer") {
-//         game.ChooseStartingPlayer();
-//         string initialPlayer = game.getCurrentPlayer().getName();
-//         game.nextPlayer();
-//         CHECK(game.getCurrentPlayer().getName() != initialPlayer);
-//     }
-
-//     SUBCASE("Test placeSettlement and placeRoad") {
-//         game.ChooseStartingPlayer();
-//         Player &currentPlayer = game.getCurrentPlayer();
-//         Board &board = game.getBoard();
-
-//         game.placeSettlement(currentPlayer, board);
-//         CHECK(currentPlayer.getPoints() == 1);
-
-//         game.placeRoad(currentPlayer, board);
-//         CHECK(currentPlayer.getRoadsNum() == 1);
-//     }
-
-//     SUBCASE("Test rollDice") {
-//         game.ChooseStartingPlayer();
-//         Board &board = game.getBoard();
-//         game.rollDice(board);
-//     }
-
-//     SUBCASE("Test buyDevelopmentCard") {
-//         game.ChooseStartingPlayer();
-//         Player &currentPlayer = game.getCurrentPlayer();
-//         currentPlayer.addResource(WHEAT, 1);
-//         currentPlayer.addResource(IRON, 1);
-//         currentPlayer.addResource(SHEEP, 1);
-
-//         game.buyDevelopmentCard(currentPlayer);
-//         CHECK(currentPlayer.getDevCardsSum() == 1);
-//     }
-
-//     SUBCASE("Test playDevelopmentCard") {
-//         game.ChooseStartingPlayer();
-//         Player &currentPlayer = game.getCurrentPlayer();
-//         currentPlayer.addDevCard("Knight");
-//         CHECK(currentPlayer.getDevCardsSum() == 1);
-
-//         game.playDevelopmentCard(currentPlayer);
-//         CHECK(currentPlayer.getDevCardsSum() == 0); // Assuming the playDevelopmentCard function decreases the count
-//     }
-// }
-
-
-// #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-// #include "doctest.h"
-// #include "player.hpp"
-// #include "board.hpp"
-// #include "catan.hpp"
-// #include "devcard.hpp"
-
-// using namespace ariel;
-
-// void initGame()
-//     {
-//         Player p1("Alice"), p2("Bob"), p3("Charlie");
-//         Catan catan(p1, p2, p3);
-//         Board &board = catan.getBoard();
-//         board.printBoard();
-
-//         catan.ChooseStartingPlayer();
-
-//         cout << "first round" << endl;
-
-//         for(int i = 0; i < 3; i++)
-//         {
-//             cout << "\n Player " << catan.getCurrentPlayer().getName() << " turn. 1st Settelment" << endl;
-//             bool flag = board.placeSettlement(catan.getCurrentPlayer(), 9);
-//             CHECK(flag == true);
-//         }
-
-
-//     }
-
-// // TEST_SUITE("Catan Game Tests") {
-
-// //     TEST_CASE("Player Initialization") {
-// //         Player p1("Alice");
-// //         CHECK(p1.getName() == "Alice");
-// //         CHECK(p1.getPoints() == 0);
-// //         CHECK(p1.getTotalResources() == 0);
-// //     }
-
-// //     TEST_CASE("Resource Management") {
-// //         Player p2("Bob");
-// //         p2.addResource(WOOD, 5);
-// //         CHECK(p2.getResource(WOOD) == 5);
-// //         p2.removeResource(WOOD, 3);
-// //         CHECK(p2.getResource(WOOD) == 2);
-
-// //         SUBCASE("Attempting to remove more resources than available") {
-// //             p2.removeResource(WOOD, 4);
-// //             CHECK(p2.getResource(WOOD) == 2);  // Should not change due to error
-// //         }
-// //     }
-
-// //     TEST_CASE("Board Setup and Operations") {
-// //         Board board;
-// //         CHECK(board.getVertex(0).getOwner() == "none");
-
-// //         Player p1("Alice");
-// //         p1.addResource(WOOD, 1);
-// //         p1.addResource(BRICK, 1);
-// //         board.placeRoad(p1, 1);  
-// //         CHECK(p1.getRoadsNum() == 1);
-// //     }
-
-// //     TEST_CASE("Game Flow and Player Interactions") {
-// //         Player p1("Alice"), p2("Bob"), p3("Charlie");
-// //         Catan game(p1, p2, p3);
-// //         game.ChooseStartingPlayer();
-
-// //         SUBCASE("Initial resource distribution") {
-// //             game.intialResources(game.getBoard());
-// //             CHECK(p1.getTotalResources() > 2); // 
-// //         }
-
-// //         SUBCASE("Building Settlements and Roads") {
-// //             // Assuming player has necessary resources to build
-// //             p1.addResource(WOOD, 1);
-// //             p1.addResource(BRICK, 1);
-// //             p1.addResource(WHEAT, 1);
-// //             p1.addResource(SHEEP, 1);
-// //             game.placeSettlement(p1, game.getBoard());
-// //             game.placeRoad(p1, game.getBoard());
-// //             CHECK(p1.getPoints() == 1);  // Points should increase from placing a settlement
-// //             CHECK(p1.getRoadsNum() == 1);
-// //         }
-// //     }
-
-// //     TEST_CASE("Development Card Functionality") {
-// //         Player p4("Dana");
-// //         p4.addResource(WHEAT, 1);
-// //         p4.addResource(SHEEP, 1);
-// //         p4.addResource(IRON, 1);
-// //         Catan game(p4, p4, p4);  // Dummy setup for testing
-
-// //         game.buyDevelopmentCard(p4);
-// //         CHECK(p4.getDevCardsSum() == 1); // Assuming a card is successfully bought
-
-// //         SUBCASE("Playing Development Cards") {
-// //             if (p4.getKnightsNum() > 0) {
-// //                 // Knight specific logic, if applicable
-// //             }
-// //         }
-// //     }
-
-// //     TEST_CASE("Trade Functionality") {
-// //         Player p1("Alice"), p2("Bob");
-// //         p1.addResource(WOOD, 5);
-// //         p2.addResource(BRICK, 5);
-
-// //         // Set up trade where p1 gives 3 wood for 3 brick from p2
-// //         p1.tradeResources(p2, WOOD, 3, BRICK, 3);
-// //         CHECK(p1.getResource(WOOD) == 2);
-// //         CHECK(p2.getResource(BRICK) == 2);
-// //         CHECK(p1.getResource(BRICK) == 3);
-// //         CHECK(p2.getResource(WOOD) == 3);
-// //     }
-// // }
 

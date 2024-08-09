@@ -244,9 +244,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
         }
 
         currentVertex.setType("city");
-        player.removeResource(WHEAT, 2);
-        player.removeResource(IRON, 3);
-        player.addPoints(1);
+       
         cout << "Settlement at vertex " << vertex << " upgraded to a city." << endl;
 
         return true;

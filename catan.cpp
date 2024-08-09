@@ -234,6 +234,9 @@ namespace ariel
             }
         }
         // Deduct the resources from the player
+        player.removeResource(WHEAT, 2);
+        player.removeResource(IRON, 3);
+        player.addPoints(1);
         
     }
 
