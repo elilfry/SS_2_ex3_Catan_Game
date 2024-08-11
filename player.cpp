@@ -186,7 +186,6 @@ namespace ariel
         }
     }
 
-           // int getTotalResources();
     int Player::getTotalResources()
     {
         int totalResources = 0;
@@ -251,11 +250,7 @@ namespace ariel
         }
 
     }
-        /*
-        check if the recources are the same 
-        check if the player has enough resources to trade
-        deduct the resources from the player
-        */ //0 1 2 10
+        
     void Player::tradeResources(Player &otherPlayer, int giveResource, int giveAmount, int takeResource, int takeAmount)
     {
        
@@ -279,11 +274,7 @@ namespace ariel
         }
     
     }
-    /*
-    check ifthe player have knight cards
-    check if the player has enough resources to trade
-    deduct the resources from the player
-    */
+  
     void Player::tradeDevelopmentCards(Player &otherPlayer,int knightAmount,int woodAmount,int brickAmount, int sheepAmount, int wheatAmount,int ironAmount)
     {
         if(getKnightsNum() < knightAmount)
@@ -358,9 +349,7 @@ namespace ariel
         
     }
 
-    /*
-    ask the player to discard half of his resources
-    */
+  
     void Player::sumIs7()
     {
         int total = getTotalResources();

@@ -3,7 +3,7 @@
 namespace ariel
 {
 
-    vector<int> numbers = {
+    vector<int> numbers = { // Initialize the numbers of the tiles
         10, 2, 9,
         12, 6, 4, 10,
         9, 11, 0, 3, 8,
@@ -11,7 +11,7 @@ namespace ariel
         5, 6, 11
     };
 
-    vector<int> resources = {
+    vector<int> resources = { // Initialize the resources of the tiles
         IRON, SHEEP, WOOD,
         WHEAT, BRICK, SHEEP, BRICK,
         WHEAT, WOOD, DESERT, WOOD, IRON,
@@ -44,9 +44,9 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
         size_t resourceIndex = 0;
         size_t numberIndex = 0;
         int tileIndex = 0;
-        for (size_t layer = 0; layer < tiles.size(); ++layer) {
+        for (size_t layer = 0; layer < tiles.size(); ++layer) { // Iterate over all layers
             for (size_t i = 0; i < tiles[layer].size(); ++i) {
-                 tiles[layer][i] = Tile(numbers[numberIndex], resources[resourceIndex], tileIndex);
+                 tiles[layer][i] = Tile(numbers[numberIndex], resources[resourceIndex], tileIndex); // Initialize the tile with the number, resource, and index
                 ++numberIndex;
                 ++resourceIndex;
                 ++tileIndex;
@@ -61,6 +61,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
             vertices.push_back(Vertex(i));
         }
         initializeVerticesNeighbors(); // add the neighbors of each vertex 
+        
         // Initialize the board with 72 edges.
         for(int i = 0; i < 72; i++)
         {
@@ -372,7 +373,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
         }
     }
 
-    void Board::intialDistributeResources(Player &player)
+    void Board::intialDistributeResources(Player &player) // Distribute resources for the initial settlements
     {
         for (Vertex &vertex : vertices) // Iterate over all vertices on the board
 
@@ -394,7 +395,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
         }
     }
 
-     void Board::initializeVerticesNeighbors()
+     void Board::initializeVerticesNeighbors() // Initialize the neighbors of each vertex
     {
         vertices[0].neighbors_vertice = {1, 8};
         vertices[1].neighbors_vertice = {0, 2};
@@ -504,7 +505,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
         vertices[53].neighbors_edges = {65, 71};
     }
 
-    void Board::initializeEdgesNeighbors()
+    void Board::initializeEdgesNeighbors() // Initialize the neighbors of each edge
     {
         edges[0].neighbors_vertice = {0, 1};
         edges[1].neighbors_vertice = {1, 2};
@@ -654,7 +655,7 @@ Bottom row: 5 (Brick), 6 (Wheat), 11 (Sheep)
         edges[71].neighbors_edges = {65, 70};
     }
 
-     void Board::assignVerticesAndEdgesToTiles()
+     void Board::assignVerticesAndEdgesToTiles() 
     {
 
         tiles[0][0].vertices = {0, 1, 2, 8, 9, 10};

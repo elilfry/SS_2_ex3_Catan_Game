@@ -9,7 +9,7 @@ TEST_OBJS = test.o board.o catan.o player.o devcard.o
 demo: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o demo $(OBJS) $(LDFLAGS)
 
-run: demo
+catan: demo
 	./demo
 
 test: $(TEST_OBJS)

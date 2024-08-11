@@ -28,7 +28,7 @@ namespace ariel {
         private:
         string owner;
         string type; // "settlement" or "city"
-        int number;
+        int number; //id
         string color ;
         
        
@@ -147,16 +147,16 @@ namespace ariel {
     class Tile
     {
         private:
-        int number;
+        int number; // 2-12 the roll number
         int type; // "desert", "wood", "brick", "sheep", "wheat", "ore"
-        int index;
+        int index; //id
 
         public:
             vector<int> edges;
             vector<int> vertices;
 
             
-            //set default ctor
+            
             Tile() = default;
 
             Tile (int number, int type,int index)
@@ -180,13 +180,6 @@ namespace ariel {
                 return this->type;
             }
 
-        
-
-            // friend ostream& operator<<(ostream& os, const Tile& t)
-            // {
-            //     os << t.type << ","  << t.number;
-            //     return os;
-            // }
 
             string getResourceType(int resource);
     };
@@ -198,9 +191,9 @@ namespace ariel {
             vector<Edge> edges;
             vector<vector<Tile>> tiles;
            
-            void initializeVerticesNeighbors(); ///////---------------------------------
-            void initializeEdgesNeighbors(); ///---------------------------------
-            void assignVerticesAndEdgesToTiles();////-----------------------------
+            void initializeVerticesNeighbors(); 
+            void initializeEdgesNeighbors(); 
+            void assignVerticesAndEdgesToTiles();
             
 
         public:
@@ -210,19 +203,20 @@ namespace ariel {
             
             ~Board();
 
-           // string getResourceType(int resource);
+          
 
-            //void initBoard();
+           
             bool placeSettlement(Player &p, int vertexId);
             bool placeRoad(Player &p, int edgeId);
             bool upgradeSettlementToCity(Player &p, int vertexId);
 
             string printVertex(Vertex &vertex);
 
-            // void placeCity(Vertex &v, Player &p);
+            
 
             void distributeResources(Player &p, int sum);
             void intialDistributeResources(Player &p);
+            
             Tile &getTile(int i);
 
             int getTileIndex(Tile &tile);
@@ -230,9 +224,8 @@ namespace ariel {
             Vertex &getVertex(int i);
 
             void printBoard();
-            // void printVertices();
-            // void printEdges();
-            // void printTiles();
+            
+            
 
 
     };

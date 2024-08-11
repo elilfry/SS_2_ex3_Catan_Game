@@ -23,7 +23,7 @@ namespace ariel
     {
     private:
         Board board;
-        vector<Player*> players; ///------
+        vector<Player*> players;
        int currentPlayer;
         vector<std::unique_ptr<Devcard>> devCards;
         stack<std::unique_ptr<Devcard>> devCardsDeck;
@@ -35,11 +35,12 @@ namespace ariel
 
         vector<Player *> getPlayers();
 
-        void shuffleResources(vector<std::unique_ptr<Devcard>> &devCards);
+        void shuffleCards(vector<std::unique_ptr<Devcard>> &devCards);
 
         void ChooseStartingPlayer();
         Board& getBoard();
         Player& getCurrentPlayer();
+        
         void setCurrentPlayer(int playerIndex); //for testing
         void nextPlayer();
         void previousPlayer();
