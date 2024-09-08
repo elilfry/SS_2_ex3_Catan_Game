@@ -25,7 +25,7 @@ To build the project, use the provided Makefile:
 make catan
 ```
 
-This will compile the source files and create an executable named `demo`, and stary the game.
+This will compile the source files and create an executable named `demo`, and start the game.
 
 
 
@@ -95,6 +95,3 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Contact
 
 For any questions or inquiries, please contact Eli Frydman at elifrydman08@gmail.com.
-
-
-This format should be directly usable in your GitHub repository.
